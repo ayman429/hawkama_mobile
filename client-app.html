@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تطبيق العميل — معاينة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green-deep: #0e3b2e;
+    --green-mid: #16543f;
+    --green-darker: #0a2a21;
+    --gold: #c9a24b;
+    --gold-light: #e6c87a;
+    --gold-soft: #f7ecd2;
+    --cream: #f6f2ea;
+    --white: #ffffff;
+    --stone: #7a7468;
+    --line: #e6e0d4;
+    --danger: #b3402f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    background: var(--cream);
+    color: var(--green-deep);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-width: 430px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  button { font-family: inherit; }
+  h1, h2, h3 { font-family: "Amiri", "IBM Plex Sans Arabic", serif; }
+
+  /* status bar */
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 18px 6px; font-size: 11px; font-weight: 600;
+    color: var(--green-deep); flex-shrink: 0;
+  }
+  .statusbar .icons { display: flex; gap: 5px; align-items: center; }
+  .statusbar svg { width: 14px; height: 14px; fill: currentColor; }
+
+  .screen { flex: 1; overflow-y: auto; padding: 14px 16px 80px; }
+  .screen::-webkit-scrollbar { width: 0; }
+
+  /* app header */
+  .app-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .app-header img { width: 34px; height: 34px; object-fit: contain; }
+  .app-header .t { font-weight: 700; font-size: 14px; }
+  .app-header .s { font-size: 10px; color: var(--stone); }
+
+  /* generic */
+  .card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .card h4 { font-size: 12px; margin-bottom: 8px; }
+  .muted { color: var(--stone); font-size: 11px; line-height: 1.7; }
+  .row { display: flex; justify-content: space-between; align-items: center; }
+  .badge {
+    display: inline-block; background: var(--cream); color: var(--green-mid);
+    border: 1px solid var(--line); border-radius: 999px;
+    font-size: 9px; padding: 2px 8px; font-weight: 600;
+  }
+  .badge.gold { background: #f7ecd2; color: #8a6a1f; border-color: #ecd9a8; }
+  .btn {
+    display: block; width: 100%; text-align: center; border: 0; cursor: pointer;
+    background: var(--green-deep); color: var(--white); font-family: inherit;
+    font-size: 12px; font-weight: 700; padding: 11px; border-radius: 8px;
+  }
+  .btn.gold { background: var(--gold); color: var(--green-darker); }
+  .btn.outline { background: transparent; color: var(--green-deep); border: 1px solid var(--green-deep); }
+  .btn.danger-o { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+  .btn.sm { padding: 8px 10px; font-size: 10px; }
+  .btn.lg { padding: 13px; font-size: 13px; }
+
+  .badge.done { background: #e7f2ec; color: #1c6b4a; border-color: #cfe5d8; }
+  .badge.danger { background: #f8e9e6; color: var(--danger); border-color: #efd2cc; }
+
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 10px; font-weight: 600; margin-bottom: 4px; color: var(--green-mid); }
+  .field input, .field select {
+    width: 100%; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--white); padding: 9px 10px; font-family: inherit;
+    font-size: 11px; color: var(--green-deep);
+  }
+
+  /* login */
+  .login-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 34px; }
+  .login-wrap img { width: 64px; height: 64px; object-fit: contain; margin-bottom: 12px; }
+  .login-wrap h1 { font-size: 17px; }
+  .login-wrap .sub { font-size: 10px; color: var(--stone); margin: 6px 0 18px; }
+  .login-card { width: 100%; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .tabs { display: flex; background: var(--cream); border-radius: 8px; padding: 3px; margin-bottom: 14px; }
+  .tabs span { flex: 1; text-align: center; font-size: 10px; font-weight: 700; padding: 7px; border-radius: 6px; color: var(--stone); cursor: pointer; }
+  .tabs span.on { background: var(--white); color: var(--green-deep); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+  /* home header */
+  .home-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .home-hd .who { flex: 1; }
+  .home-hd .hi { font-size: 11px; color: var(--stone); }
+  .home-hd .nm { font-size: 14px; font-weight: 800; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--green-deep); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+  .bell { position: relative; width: 38px; height: 38px; border-radius: 12px; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--green-deep); }
+  .bell svg { width: 17px; height: 17px; }
+  .bell .dot { position: absolute; top: 8px; inset-inline-end: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); border: 1.5px solid var(--white); }
+
+  .search { display: flex; align-items: center; gap: 8px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 14px; color: var(--stone); font-size: 11px; cursor: pointer; }
+  .search svg { width: 15px; height: 15px; }
+
+  .hero { background: linear-gradient(135deg, var(--green-deep), var(--green-mid)); color: var(--white); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  .hero .lbl { font-size: 9px; opacity: .8; }
+  .hero .svcn { font-size: 14px; font-weight: 800; margin: 2px 0; }
+  .hero .meta { display: flex; align-items: center; gap: 6px; font-size: 10px; opacity: .9; margin-top: 6px; }
+  .hero .meta svg { width: 12px; height: 12px; }
+  .hero .btn.sm { background: var(--gold); color: var(--green-darker); width: auto; display: inline-block; padding: 8px 16px; margin-top: 10px; }
+
+  .sec-hd { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px; }
+  .sec-hd h4 { font-size: 12px; }
+  .sec-hd a { font-size: 10px; color: var(--green-mid); font-weight: 700; cursor: pointer; text-decoration: none; }
+
+  .qa { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .q { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; cursor: pointer; }
+  .q .qi { width: 32px; height: 32px; border-radius: 10px; background: var(--gold-soft); color: var(--green-mid); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
+  .q .qi svg { width: 15px; height: 15px; }
+  .q span { font-size: 9px; font-weight: 700; }
+
+  .mi-ic { width: 34px; height: 34px; border-radius: 10px; background: var(--green-deep); color: var(--gold-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mi-ic svg { width: 16px; height: 16px; }
+  .mini { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+  .mini .tt { font-size: 11px; font-weight: 700; }
+  .mini .ss { font-size: 9px; color: var(--stone); margin-top: 2px; }
+  .mini .pr { margin-inline-start: auto; font-size: 11px; font-weight: 800; color: var(--green-mid); }
+
+  .banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: linear-gradient(120deg, #f0e3c2, var(--gold-soft)); border: 1px solid #e7d29a; border-radius: 14px; padding: 12px 14px; cursor: pointer; margin-bottom: 6px; }
+  .banner b { display: block; font-size: 11.5px; }
+  .banner span { font-size: 9px; color: #8a6a1f; }
+  .banner svg { width: 14px; height: 14px; color: var(--green-deep); flex-shrink: 0; }
+
+  /* wizard steps */
+  .steps { display: flex; align-items: flex-start; margin: 4px 0 14px; }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .step span { width: 24px; height: 24px; border-radius: 50%; background: var(--white); border: 1.5px solid var(--line); color: var(--stone); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .step em { font-style: normal; font-size: 8px; color: var(--stone); }
+  .step.on span { background: var(--green-deep); border-color: var(--green-deep); color: var(--gold-light); }
+  .step.on em { color: var(--green-deep); font-weight: 700; }
+  .stline { flex: 1; height: 1.5px; background: var(--line); margin-top: 12px; min-width: 14px; }
+  .stline.on { background: var(--green-deep); }
+
+  .bhd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .bhd button { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--green-deep); }
+  .bhd button svg { width: 16px; height: 16px; }
+  .bhd .t { font-size: 13px; font-weight: 800; flex: 1; text-align: center; }
+  .bhd .sp { width: 34px; }
+
+  /* pick rows (service / staff) */
+  .pick { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; cursor: pointer; }
+  .pick.on { border-color: var(--gold); background: #fffdf6; }
+  .pick .tt { font-size: 11px; font-weight: 700; }
+  .pick .ss { font-size: 9px; color: var(--stone); margin-top: 2px; }
+  .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex-shrink: 0; position: relative; }
+  .pick.on .radio { border-color: var(--gold); }
+  .pick.on .radio::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--gold); }
+  .stars { color: var(--gold); font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 3px; margin-top: 4px; }
+  .stars svg { width: 11px; height: 11px; }
+
+  /* calendar + slots */
+  .cal { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+  .cal-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; font-weight: 800; }
+  .cal-hd button { border: 0; background: var(--cream); width: 24px; height: 24px; border-radius: 8px; cursor: pointer; color: var(--green-deep); display: flex; align-items: center; justify-content: center; }
+  .cal-hd button svg { width: 11px; height: 11px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+  .cal-grid .wd { font-size: 8px; color: var(--stone); padding: 4px 0; font-weight: 700; }
+  .cd { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; border-radius: 9px; color: #bbb2a2; }
+  .cd.on { color: var(--green-deep); font-weight: 700; cursor: pointer; background: var(--cream); }
+  .cd.sel { background: var(--gold); color: var(--white); }
+
+  .sl-lbl { font-size: 10px; font-weight: 700; margin: 2px 0 6px; color: var(--green-mid); }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .sl { background: var(--white); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 4px; text-align: center; font-size: 10px; font-weight: 700; cursor: pointer; color: var(--green-deep); }
+  .sl.on { background: var(--green-deep); color: var(--white); border-color: var(--green-deep); }
+  .sl.off { color: #c4bcae; text-decoration: line-through; cursor: default; background: transparent; }
+
+  /* summary + success */
+  .sum { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .sum .rw { display: flex; justify-content: space-between; font-size: 11px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+  .sum .rw:last-child { border-bottom: 0; }
+  .sum .rw .k { color: var(--stone); }
+  .sum .rw.tot b { font-size: 13px; color: var(--green-deep); }
+  .succ { text-align: center; padding-top: 34px; }
+  .succ .ok { width: 74px; height: 74px; border-radius: 50%; background: var(--green-deep); color: var(--gold-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 0 0 8px rgba(14,59,46,.08); }
+  .succ .ok svg { width: 30px; height: 30px; }
+  .succ h2 { font-size: 17px; margin-bottom: 5px; }
+  .succ .ref { display: inline-block; background: var(--gold-soft); color: #8a6a1f; font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 999px; margin: 8px 0 16px; }
+  .succ .sum { text-align: start; }
+
+  /* pills + bookings */
+  .pills { display: flex; gap: 6px; margin-bottom: 12px; }
+  .pill { flex: 1; text-align: center; font-size: 10px; font-weight: 700; padding: 8px; border-radius: 999px; background: var(--white); border: 1px solid var(--line); color: var(--stone); cursor: pointer; }
+  .pill.on { background: var(--green-deep); color: var(--white); border-color: var(--green-deep); }
+  .bk { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+  .bk .rw2 { display: flex; gap: 7px; align-items: center; font-size: 9.5px; color: var(--stone); margin-top: 6px; }
+  .bk .rw2 svg { width: 12px; height: 12px; }
+  .bk .acts { display: flex; gap: 8px; margin-top: 10px; }
+  .bk .acts .btn { flex: 1; padding: 8px; font-size: 10px; }
+
+  .dl { width: 34px; height: 34px; border-radius: 10px; background: var(--green-deep); color: var(--gold-light); border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dl svg { width: 14px; height: 14px; }
+
+  /* notifications */
+  .ntf { display: flex; gap: 10px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; margin-bottom: 8px; }
+  .ntf.un { border-inline-start: 3px solid var(--gold); }
+  .ntf .t { font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .ntf .t .ud { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+  .ntf .t .tm { font-size: 8.5px; color: var(--stone); font-weight: 400; margin-inline-start: auto; }
+  .ntf .b { font-size: 9.5px; color: var(--stone); margin-top: 3px; line-height: 1.6; }
+
+  /* profile */
+  .pf-hd { display: flex; align-items: center; gap: 12px; background: var(--green-deep); color: var(--white); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+  .pf-hd .avatar { background: var(--gold); color: var(--green-darker); width: 48px; height: 48px; font-size: 17px; }
+  .pf-hd .nm { font-size: 14px; font-weight: 800; }
+  .pf-hd .em { font-size: 9.5px; opacity: .75; margin-top: 2px; }
+  .mi { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; font-size: 11.5px; font-weight: 700; }
+  .mi .chev { margin-inline-start: auto; color: var(--stone); display: flex; }
+  .mi .chev svg { width: 14px; height: 14px; }
+  .mi.logout { color: var(--danger); }
+  .mi.logout .mi-ic { background: #f8e9e6; color: var(--danger); }
+
+  /* splash + onboarding */
+  .splash { margin: -14px -16px; min-height: calc(100% + 28px); padding: 20px; background: linear-gradient(160deg, var(--green-deep), var(--green-darker)); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--white); text-align: center; }
+  .splash .lg { width: 96px; height: 96px; border-radius: 28px; background: rgba(255,255,255,.1); border: 1px solid rgba(230,200,122,.35); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .splash .lg img { width: 58px; height: 58px; object-fit: contain; }
+  .splash h1 { font-size: 20px; margin-bottom: 6px; }
+  .splash p { font-size: 10.5px; color: var(--gold-light); margin-bottom: 26px; line-height: 1.9; }
+  .splash .btn { background: var(--gold); color: var(--green-darker); max-width: 220px; }
+  .splash .sub-btn { background: transparent; border: 1px solid rgba(255,255,255,.35); color: var(--white); max-width: 220px; margin-top: 8px; }
+
+  .ob { text-align: center; padding-top: 20px; }
+  .ob .skip { text-align: start; font-size: 10px; color: var(--stone); cursor: pointer; font-weight: 700; margin-bottom: 8px; }
+  .ob .pic { width: 150px; height: 150px; border-radius: 50%; background: var(--white); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; margin: 8px auto 18px; box-shadow: 0 8px 24px rgba(14,59,46,.06); color: var(--green-mid); }
+  .ob .pic svg { width: 56px; height: 56px; }
+  .ob h3 { font-size: 16px; margin-bottom: 8px; }
+  .ob p { font-size: 10.5px; color: var(--stone); line-height: 1.9; max-width: 240px; margin: 0 auto 16px; }
+  .dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 16px; }
+  .dots i { width: 6px; height: 6px; border-radius: 999px; background: var(--line); }
+  .dots i.on { width: 18px; background: var(--gold); }
+
+  /* stats */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stat { background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; text-align: center; }
+  .stat .n { font-size: 15px; font-weight: 800; color: var(--green-deep); }
+  .stat .l { font-size: 8.5px; color: var(--stone); margin-top: 3px; }
+
+  /* packages */
+  .pkg { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; background: var(--white); }
+  .pkg.hot { border-color: var(--gold); background: linear-gradient(180deg, #fffdf6, var(--white)); }
+  .pkg .price { font-size: 16px; font-weight: 800; }
+  .pkg .price small { font-size: 9px; font-weight: 400; color: var(--stone); }
+  .pkg ul { list-style: none; margin: 8px 0 10px; }
+  .pkg li { font-size: 10px; color: var(--stone); padding: 3px 0; }
+  .pkg li::before { content: "✓"; color: var(--gold); margin-left: 6px; font-weight: 700; }
+
+  /* contact */
+  .c-item { display: flex; gap: 10px; align-items: center; padding: 11px 12px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 9px; }
+  .c-item .ic { width: 30px; height: 30px; border-radius: 50%; background: var(--green-deep); color: var(--gold-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .c-item .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .c-item .v { font-size: 11px; font-weight: 600; }
+  .c-item .k { font-size: 9px; color: var(--stone); }
+
+  /* bottom nav */
+  .tabbar {
+    position: fixed; bottom: 0; inset-inline: 0; height: 56px;
+    max-width: 430px; margin: 0 auto; padding-inline: 6px;
+    background: var(--white); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; align-items: center;
+  }
+  .tabbar .tb { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 8.5px; color: var(--stone); cursor: pointer; }
+  .tabbar .tb.on { color: var(--green-deep); font-weight: 700; }
+  .tabbar svg { width: 17px; height: 17px; }
+  .tabbar .fab { width: 50px; height: 50px; border-radius: 50%; background: var(--gold); color: var(--green-darker); display: flex; align-items: center; justify-content: center; margin-top: -22px; box-shadow: 0 6px 16px rgba(201,162,75,.45); border: 3px solid var(--cream); cursor: pointer; }
+  .tabbar .fab svg { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+<div class="statusbar">
+  <span>9:41</span>
+  <span class="icons">
+    <svg viewBox="0 0 24 24"><path d="M2 17h4v4H2zM8 13h4v8H8zM14 9h4v12h-4zM20 5h4v16h-4z" transform="scale(.8)"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M12 21l-1.5-1.4C5.4 15 2 12 2 8.5 2 6 4 4 6.5 4c1.7 0 3.4.9 4.3 2.3h2.4C14.1 4.9 15.8 4 17.5 4 20 4 22 6 22 8.5c0 3.5-3.4 6.5-8.5 11.1z" transform="scale(.7) translate(4 2)" opacity="0"/></svg>
+    <svg viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="10" width="11" height="5" rx="1"/><rect x="20" y="10.5" width="2.5" height="4" rx="1"/></svg>
+  </span>
+</div>
+<div class="screen" id="screen"></div>
+<nav class="tabbar" id="tabbar"></nav>
+
+<script>
+  var LOGO = "/logo_icon.png";
+
+  function S(p, sw) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (sw || 1.8) + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+  }
+
+  var ICONS = {
+    home: S('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
+    pkg: S('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+    cal: S('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
+    chat: S('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'),
+    bell: S('<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>'),
+    search: S('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+    shield: S('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'),
+    brief: S('<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'),
+    risk: S('<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'),
+    file: S('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>'),
+    dl: S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
+    clock: S('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
+    user: S('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+    edit: S('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>'),
+    card: S('<rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>'),
+    logout: S('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>'),
+    phone: S('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
+    mail: S('<rect x="3" y="5" width="18" height="14" rx="1"/><polyline points="3,6 12,13 21,6"/>'),
+    pin: S('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'),
+    plus: S('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>', 2.2),
+    check: S('<polyline points="20 6 9 17 4 12"/>', 2.4),
+    chevR: S('<polyline points="9 18 15 12 9 6"/>', 2),
+    chevL: S('<polyline points="15 18 9 12 15 6"/>', 2),
+    star: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>'
+  };
+
+  /* ---------- data ---------- */
+  var SERVICES = [
+    { ic: "shield", n: "استشارات الحوكمة والامتثال", d: "بناء منظومة الحوكمة وسياسات الشركة", dur: "٦٠ دقيقة", pr: "٤٥٠ ر.س" },
+    { ic: "brief", n: "الاستشارات الإدارية", d: "خطط العمل وتحسين الأداء التشغيلي", dur: "٦٠ دقيقة", pr: "٤٠٠ ر.س" },
+    { ic: "risk", n: "إدارة المخاطر والامتثال", d: "تقييم المخاطر وخطط المعالجة", dur: "٩٠ دقيقة", pr: "٥٥٠ ر.س" },
+    { ic: "file", n: "المراجعة الداخلية", d: "مراجعة الضوابط والإجراءات الداخلية", dur: "٩٠ دقيقة", pr: "٦٠٠ ر.س" }
+  ];
+  var STAFF = [
+    { ini: "س", n: "د. سارة الدوسري", r: "متخصصة الحوكمة والامتثال", rt: "4.9", js: "٣٢٠ استشارة" },
+    { ini: "أ", n: "أ. أحمد العتيبي", r: "مستشار الاستشارات الإدارية", rt: "4.8", js: "٢٨٠ استشارة" },
+    { ini: "ن", n: "أ. نورة القحطاني", r: "استشارية مخاطر وامتثال", rt: "4.7", js: "٢١٠ استشارات" }
+  ];
+  var TIMES = ["١٠:٠٠ ص", "١١:٣٠ ص", "١٢:٠٠ م", "٠١:٣٠ م", "٠٣:٠٠ م", "٠٤:٣٠ م"];
+  var TIMES_OFF = [1, 4];
+  var DAYS_ON = [8, 12, 14, 15, 19, 22, 26, 29];
+  var UP = [
+    { s: "استشارات الحوكمة والامتثال", w: "د. سارة الدوسري", t: "الثلاثاء ١٤ أكتوبر · ١٠:٠٠ ص", st: "مجدول", c: "done" },
+    { s: "الاستشارات الإدارية", w: "أ. أحمد العتيبي", t: "الأحد ١٩ أكتوبر · ١٢:٠٠ م", st: "بانتظار التأكيد", c: "gold" }
+  ];
+  var PAST = [
+    { s: "مراجعة مستندات الامتثال", w: "د. سارة الدوسري", t: "٢٨ سبتمبر · ١١:٣٠ ص", st: "مكتمل", c: "done" },
+    { s: "الاستشارات الإدارية", w: "أ. نورة القحطاني", t: "١٤ سبتمبر · ٠١:٣٠ م", st: "مكتمل", c: "done" },
+    { s: "إدارة المخاطر والامتثال", w: "أ. أحمد العتيبي", t: "٧ سبتمبر · ٠٣:٠٠ م", st: "ملغي", c: "danger" }
+  ];
+  var REPORTS = [
+    { n: "تقرير الأداء الشهري — سبتمبر", meta: "٠٢ أكتوبر ٢٠٢٦ · PDF · ١٫٢ م.ب", ready: true },
+    { n: "تقرير الأداء الشهري — أغسطس", meta: "٠٢ سبتمبر ٢٠٢٦ · PDF · ١٫١ م.ب", ready: true },
+    { n: "تقرير الامتثال الربع سنوي Q3", meta: "يُصدر بنهاية أكتوبر", ready: false }
+  ];
+  var NOTIFS = [
+    { ic: "cal", t: "تم تأكيد حجزك", b: "استشارة الحوكمة مع د. سارة يوم الثلاثاء الساعة ١٠:٠٠ ص", time: "قبل ٥ دقائق", un: true },
+    { ic: "file", t: "تقرير جديد متاح", b: "تقرير الأداء الشهري لشهر سبتمبر جاهز الآن", time: "قبل ساعتين", un: true },
+    { ic: "bell", t: "تذكير بموعدك", b: "موعدك غداً الساعة ١٢:٠٠ م — الجلسة عبر Google Meet", time: "أمس", un: false },
+    { ic: "card", t: "تم الدفع بنجاح", b: "اشتراك الباقة الفضية — ٤٬٥٠٠ ر.س", time: "قبل ٣ أيام", un: false }
+  ];
+  var OB_SLIDES = [
+    { ic: "cal", t: "احجز موعدك بسهولة", p: "اختر الخدمة والمستشار والوقت المناسب خلال أقل من دقيقة — بدون مكالمات أو انتظار." },
+    { ic: "bell", t: "تذكيرات فورية", p: "إشعارات تذكّرك بمواعيدك القادمة وتصلك التقارير فور جاهزيتها." },
+    { ic: "shield", t: "مستشارون معتمدون", p: "نخبة من خبراء الحوكمة والامتثال والاستشارات الإدارية لخدمة منشأتك." }
+  ];
+
+  /* ---------- state ---------- */
+  var SEL = { service: 0, staff: 0, date: null, time: null };
+  var OB = 0, AUTH = 0, BTAB = 0;
+
+  function ar(n) { return String(n).replace(/[0-9]/g, function (c) { return "٠١٢٣٤٥٦٧٨٩"[c]; }); }
+
+  /* ---------- helpers ---------- */
+  function header(sub) {
+    return '<div class="app-header"><img src="' + LOGO + '" alt=""><div><div class="t">المتخصصون في الحوكمة والامتثال</div><div class="s">' + sub + '</div></div></div>';
+  }
+  function bhd(t, back) {
+    return '<div class="bhd"><button onclick="go(\'' + back + '\')" aria-label="رجوع">' + ICONS.chevR + '</button><div class="t">' + t + '</div><div class="sp"></div></div>';
+  }
+  function steps(a) {
+    var L = ["الخدمة", "المستشار", "الموعد", "التأكيد"], h = '<div class="steps">';
+    for (var i = 0; i < 4; i++) {
+      if (i) h += '<div class="stline' + (i <= a ? " on" : "") + '"></div>';
+      h += '<div class="step' + (i <= a ? " on" : "") + '"><span>' + ar(i + 1) + '</span><em>' + L[i] + '</em></div>';
+    }
+    return h + '</div>';
+  }
+  function rw(k, v) { return '<div class="rw"><span class="k">' + k + '</span><b>' + v + '</b></div>'; }
+  function qa(icn, lbl, to) {
+    return '<div class="q" onclick="go(\'' + to + '\')"><div class="qi">' + ICONS[icn] + '</div><span>' + lbl + '</span></div>';
+  }
+  function mi(icn, lbl, to) {
+    return '<div class="mi"' + (to ? ' onclick="go(\'' + to + '\')"' : "") + '><div class="mi-ic">' + ICONS[icn] + '</div>' + lbl + '<span class="chev">' + ICONS.chevL + '</span></div>';
+  }
+  function calHTML() {
+    var first = new Date(2026, 9, 1).getDay(), days = new Date(2026, 10, 0).getDate(), g = "", i, d;
+    ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"].forEach(function (w) { g += '<div class="wd">' + w + '</div>'; });
+    for (i = 0; i < first; i++) g += "<div></div>";
+    for (d = 1; d <= days; d++) {
+      var on = DAYS_ON.indexOf(d) !== -1, sel = SEL.date === d;
+      g += '<div class="cd' + (on ? " on" : "") + (sel ? " sel" : "") + '"' + (on ? ' onclick="pickDay(' + d + ')"' : "") + '>' + ar(d) + '</div>';
+    }
+    return '<div class="cal">' +
+      '<div class="cal-hd"><button type="button">' + ICONS.chevR + '</button><span>أكتوبر ٢٠٢٦</span><button type="button">' + ICONS.chevL + '</button></div>' +
+      '<div class="cal-grid">' + g + '</div></div>';
+  }
+
+  /* ---------- screens ---------- */
+  var SCREENS = {
+    splash: function () {
+      return '<div class="splash">' +
+        '<div class="lg"><img src="' + LOGO + '" alt=""></div>' +
+        '<h1>المتخصصون في الحوكمة والامتثال</h1>' +
+        '<p>احجز استشارتك، تابع تقاريرك، وادِر اشتراكك<br>من مكان واحد</p>' +
+        '<button class="btn" onclick="go(\'onboarding\')">ابدأ الآن</button>' +
+        '<button class="btn sub-btn" onclick="go(\'home\')">متابعة كضيف</button>' +
+      '</div>';
+    },
+    onboarding: function () {
+      var s = OB_SLIDES[OB], last = OB === OB_SLIDES.length - 1;
+      return '<div class="ob">' +
+        '<div class="skip" onclick="go(\'login\')">تخطّي</div>' +
+        '<div class="pic">' + ICONS[s.ic] + '</div>' +
+        '<h3>' + s.t + '</h3><p>' + s.p + '</p>' +
+        '<div class="dots">' + OB_SLIDES.map(function (_, i) { return '<i class="' + (i === OB ? "on" : "") + '"></i>'; }).join("") + '</div>' +
+        '<button class="btn" onclick="nextOb()">' + (last ? "ابدأ الآن" : "التالي") + '</button></div>';
+    },
+    login: function () {
+      var isLogin = AUTH === 0, fields;
+      if (isLogin) {
+        fields = '<div class="field"><label>البريد الإلكتروني</label><input dir="ltr" style="text-align:right" value="client@company.sa"></div>' +
+          '<div class="field"><label>كلمة المرور</label><input type="password" value="12345678"></div>' +
+          '<div style="font-size:9.5px;color:var(--green-mid);font-weight:700;margin-bottom:12px;cursor:pointer">نسيت كلمة المرور؟</div>';
+      } else {
+        fields = '<div class="field"><label>الاسم الكامل</label><input placeholder="أحمد المطيري"></div>' +
+          '<div class="field"><label>رقم الجوال</label><input dir="ltr" style="text-align:right" placeholder="05xxxxxxxx"></div>' +
+          '<div class="field"><label>البريد الإلكتروني</label><input dir="ltr" style="text-align:right" placeholder="client@company.sa"></div>' +
+          '<div class="field"><label>كلمة المرور</label><input type="password" placeholder="••••••••"></div>';
+      }
+      return '<div class="login-wrap">' +
+        '<img src="' + LOGO + '" alt="">' +
+        '<h1>بوابة العميل</h1>' +
+        '<div class="sub">سجّل دخولك لإدارة استشاراتك وباقاتك</div>' +
+        '<div class="login-card">' +
+          '<div class="tabs">' +
+            '<span class="' + (isLogin ? "on" : "") + '" onclick="setAuth(0)">تسجيل الدخول</span>' +
+            '<span class="' + (isLogin ? "" : "on") + '" onclick="setAuth(1)">إنشاء حساب</span>' +
+          '</div>' + fields +
+          '<button class="btn" onclick="go(\'home\')">' + (isLogin ? "تسجيل الدخول" : "إنشاء الحساب") + '</button>' +
+        '</div></div>';
+    },
+    home: function () {
+      return '<div class="home-hd">' +
+          '<div class="avatar">أ</div>' +
+          '<div class="who"><div class="hi">مساء الخير 👋</div><div class="nm">أحمد المطيري</div></div>' +
+          '<div class="bell" onclick="go(\'notifications\')">' + ICONS.bell + '<span class="dot"></span></div>' +
+        '</div>' +
+        '<div class="search" onclick="go(\'services\')">' + ICONS.search + '<span>ابحث عن خدمة أو مستشار…</span></div>' +
+        '<div class="hero">' +
+          '<div class="lbl">موعدك القادم</div>' +
+          '<div class="svcn">استشارات الحوكمة والامتثال</div>' +
+          '<div class="meta">' + ICONS.clock + '<span>الثلاثاء ١٤ أكتوبر · ١٠:٠٠ ص</span></div>' +
+          '<div class="meta">' + ICONS.user + '<span>د. سارة الدوسري — عن بُعد</span></div>' +
+          '<button class="btn sm" onclick="go(\'bookings\')">تفاصيل الموعد</button>' +
+        '</div>' +
+        '<div class="sec-hd"><h4>إجراءات سريعة</h4></div>' +
+        '<div class="qa">' +
+          qa("plus", "حجز جديد", "services") + qa("cal", "مواعيدي", "bookings") + qa("file", "تقاريري", "reports") + qa("pkg", "باقاتي", "packages") +
+        '</div>' +
+        '<div class="stats">' +
+          '<div class="stat"><div class="n">٤</div><div class="l">تقارير</div></div>' +
+          '<div class="stat"><div class="n">٢</div><div class="l">مواعيد قادمة</div></div>' +
+          '<div class="stat"><div class="n">الفضية</div><div class="l">الباقة الحالية</div></div>' +
+        '</div>' +
+        '<div class="sec-hd"><h4>خدماتنا</h4><a onclick="go(\'services\')">عرض الكل</a></div>' +
+        miniSvc(0) + miniSvc(1) +
+        '<div class="banner" onclick="go(\'packages\')" style="margin-top:8px"><div><b>ارتقِ للباقة الذهبية</b><span>مستشار مخصص + دعم 24/7</span></div>' + ICONS.chevL + '</div>';
+    },
+    services: function () {
+      return bhd("اختر الخدمة", "home") + steps(0) +
+        SERVICES.map(function (s, i) {
+          return '<div class="pick' + (SEL.service === i ? " on" : "") + '" onclick="pickService(' + i + ')">' +
+            '<div class="mi-ic">' + ICONS[s.ic] + '</div>' +
+            '<div style="flex:1"><div class="tt">' + s.n + '</div><div class="ss">' + s.dur + ' · ' + s.pr + '</div></div>' +
+            '<div class="radio"></div></div>';
+        }).join("") +
+        '<button class="btn" onclick="go(\'staff\')">متابعة</button>';
+    },
+    staff: function () {
+      return bhd("اختر المستشار", "services") + steps(1) +
+        STAFF.map(function (s, i) {
+          return '<div class="pick' + (SEL.staff === i ? " on" : "") + '" onclick="pickStaff(' + i + ')">' +
+            '<div class="avatar">' + s.ini + '</div>' +
+            '<div style="flex:1"><div class="tt">' + s.n + '</div><div class="ss">' + s.r + '</div>' +
+              '<div class="stars">' + ICONS.star + s.rt + '<span style="color:var(--stone);font-weight:400"> · ' + s.js + '</span></div></div>' +
+            '<div class="radio"></div></div>';
+        }).join("") +
+        '<button class="btn" onclick="go(\'schedule\')">متابعة</button>';
+    },
+    schedule: function () {
+      var ready = SEL.date !== null && SEL.time !== null;
+      return bhd("اختر الموعد", "staff") + steps(2) + calHTML() +
+        '<div class="sl-lbl">الأوقات المتاحة' + (SEL.date ? ' — ' + ar(SEL.date) + ' أكتوبر' : " — اختر يوماً أولاً") + '</div>' +
+        '<div class="slots">' +
+          TIMES.map(function (t, i) {
+            var off = TIMES_OFF.indexOf(i) !== -1;
+            return '<button type="button" class="sl' + (off ? " off" : "") + (SEL.time === i ? " on" : "") + '"' + (off ? "" : ' onclick="pickTime(' + i + ')"') + '>' + t + '</button>';
+          }).join("") +
+        '</div>' +
+        '<button class="btn" style="' + (ready ? "" : "opacity:.45;pointer-events:none") + '" onclick="go(\'confirm\')">متابعة</button>';
+    },
+    confirm: function () {
+      var s = SERVICES[SEL.service], st = STAFF[SEL.staff];
+      return bhd("تأكيد الحجز", "schedule") + steps(3) +
+        '<div class="sum">' +
+          rw("الخدمة", s.n) +
+          rw("المستشار", st.n) +
+          rw("التاريخ", ar(SEL.date || 14) + ' أكتوبر ٢٠٢٦') +
+          rw("الوقت", TIMES[SEL.time === null ? 0 : SEL.time]) +
+          rw("المدة", s.dur) +
+          '<div class="rw tot"><span class="k">الإجمالي</span><b>' + s.pr + '</b></div>' +
+        '</div>' +
+        '<div class="card"><div class="muted">✓ <b>تأكيد الموعد</b> خلال يوم عمل واحد<br>✓ الجلسة حضورياً أو عن بُعد عبر Google Meet<br>✓ يمكنك الإلغاء مجاناً قبل ٢٤ ساعة من الموعد</div></div>' +
+        '<button class="btn gold lg" onclick="go(\'success\')">تأكيد الحجز</button>';
+    },
+    success: function () {
+      var s = SERVICES[SEL.service], st = STAFF[SEL.staff];
+      return '<div class="succ">' +
+        '<div class="ok">' + ICONS.check + '</div>' +
+        '<h2>تم الحجز بنجاح!</h2>' +
+        '<div class="muted">تم استلام طلبك وسيتم تأكيد الموعد قريباً</div>' +
+        '<div><span class="ref">رقم الحجز: <b dir="ltr">GC-1027</b></span></div>' +
+        '<div class="sum">' +
+          rw("الخدمة", s.n) +
+          rw("المستشار", st.n) +
+          rw("الموعد", ar(SEL.date || 14) + ' أكتوبر · ' + TIMES[SEL.time === null ? 0 : SEL.time]) +
+        '</div>' +
+        '<button class="btn" onclick="go(\'bookings\')">عرض مواعيدي</button>' +
+        '<button class="btn outline" style="margin-top:8px" onclick="go(\'home\')">العودة للرئيسية</button></div>';
+    },
+    bookings: function () {
+      var list = BTAB === 0 ? UP : PAST;
+      return header("مواعيدي") +
+        '<div class="pills">' +
+          '<div class="pill' + (BTAB === 0 ? " on" : "") + '" onclick="setBTab(0)">قادمة (' + ar(UP.length) + ')</div>' +
+          '<div class="pill' + (BTAB === 1 ? " on" : "") + '" onclick="setBTab(1)">سابقة (' + ar(PAST.length) + ')</div>' +
+        '</div>' +
+        list.map(function (b) {
+          var acts = BTAB === 0
+            ? '<div class="acts"><button class="btn sm outline">تفاصيل</button><button class="btn sm danger-o">إلغاء الموعد</button></div>'
+            : '<div class="acts"><button class="btn sm outline">عرض التقرير</button><button class="btn sm">إعادة الحجز</button></div>';
+          return '<div class="bk">' +
+            '<div class="row"><h4 style="font-size:11.5px">' + b.s + '</h4><span class="badge ' + b.c + '">' + b.st + '</span></div>' +
+            '<div class="rw2">' + ICONS.user + '<span>' + b.w + '</span></div>' +
+            '<div class="rw2">' + ICONS.cal + '<span>' + b.t + '</span></div>' +
+            acts + '</div>';
+        }).join("");
+    },
+    reports: function () {
+      return header("تقاريري") +
+        REPORTS.map(function (r) {
+          return '<div class="mini" style="cursor:default"><div class="mi-ic">' + ICONS.file + '</div>' +
+            '<div style="flex:1"><div class="tt">' + r.n + '</div><div class="ss">' + r.meta + '</div></div>' +
+            (r.ready ? '<button class="dl">' + ICONS.dl + '</button>' : '<span class="badge gold">قيد الإعداد</span>') + '</div>';
+        }).join("");
+    },
+    packages: function () {
+      return header("باقات الاشتراك") +
+        '<div class="pkg"><div class="row"><h4>الباقة البرونزية</h4><div class="price">١,٩٠٠ <small>ر.س/شهر</small></div></div>' +
+          '<ul><li>استشارتان شهرياً</li><li>مراجعة مستندين</li><li>تقرير ربع سنوي</li></ul><button class="btn outline">اختر الباقة</button></div>' +
+        '<div class="pkg hot"><div class="row"><h4>الباقة الفضية <span class="badge gold">الحالية</span></h4><div class="price">٤,٥٠٠ <small>ر.س/شهر</small></div></div>' +
+          '<ul><li>٥ استشارات شهرياً</li><li>مراجعة ٨ مستندات</li><li>تقرير أداء شهري</li></ul><button class="btn">باقتك الحالية</button></div>' +
+        '<div class="pkg"><div class="row"><h4>الباقة الذهبية</h4><div class="price">٩,٨٠٠ <small>ر.س/شهر</small></div></div>' +
+          '<ul><li>استشارات غير محدودة</li><li>مستشار مخصص</li><li>دعم 24/7</li></ul><button class="btn gold">ترقية الباقة</button></div>';
+    },
+    notifications: function () {
+      return header("الإشعارات") +
+        NOTIFS.map(function (n) {
+          return '<div class="ntf' + (n.un ? " un" : "") + '"><div class="mi-ic" style="width:32px;height:32px">' + ICONS[n.ic] + '</div>' +
+            '<div style="flex:1"><div class="t">' + (n.un ? '<span class="ud"></span>' : "") + n.t + '<span class="tm">' + n.time + '</span></div>' +
+            '<div class="b">' + n.b + '</div></div></div>';
+        }).join("");
+    },
+    profile: function () {
+      return '<div class="pf-hd"><div class="avatar">أ</div><div><div class="nm">أحمد المطيري</div><div class="em" dir="ltr" style="text-align:end">client@company.sa</div></div></div>' +
+        mi("edit", "البيانات الشخصية") +
+        mi("pin", "عناويني") +
+        mi("card", "طرق الدفع") +
+        mi("bell", "الإشعارات", "notifications") +
+        mi("chat", "تواصل معنا", "contact") +
+        '<div class="mi logout" onclick="go(\'login\')"><div class="mi-ic">' + ICONS.logout + '</div>تسجيل الخروج<span class="chev">' + ICONS.chevL + '</span></div>';
+    },
+    contact: function () {
+      return header("تواصل معنا") +
+        '<div class="c-item"><div class="ic">' + ICONS.phone + '</div><div><div class="v" dir="ltr">+966 550181166</div><div class="k">اتصال مباشر</div></div></div>' +
+        '<div class="c-item"><div class="ic">' + ICONS.mail + '</div><div><div class="v" dir="ltr">GCMC@GCMC.SA</div><div class="k">البريد الإلكتروني</div></div></div>' +
+        '<div class="c-item"><div class="ic">' + ICONS.pin + '</div><div><div class="v">الرياض — طريق العروبة</div><div class="k">الفرع الرئيسي</div></div></div>' +
+        '<div class="card"><h4>أرسل رسالة</h4>' +
+          '<div class="field"><label>الموضوع</label><input placeholder="موضوع الرسالة"></div>' +
+          '<div class="field"><label>الرسالة</label><input placeholder="اكتب رسالتك هنا..."></div>' +
+          '<button class="btn gold">إرسال</button></div>';
+    }
+  };
+
+  function miniSvc(i) {
+    var s = SERVICES[i];
+    return '<div class="mini" onclick="pickService(' + i + ');go(\'staff\')">' +
+      '<div class="mi-ic">' + ICONS[s.ic] + '</div>' +
+      '<div style="flex:1"><div class="tt">' + s.n + '</div><div class="ss">' + s.dur + '</div></div>' +
+      '<div class="pr">' + s.pr + '</div></div>';
+  }
+
+  /* ---------- actions ---------- */
+  function pickService(i) { SEL.service = i; renderCur(); }
+  function pickStaff(i) { SEL.staff = i; renderCur(); }
+  function pickDay(d) { SEL.date = d; renderCur(); }
+  function pickTime(i) { SEL.time = i; renderCur(); }
+  function setBTab(i) { BTAB = i; renderCur(); }
+  function setAuth(i) { AUTH = i; renderCur(); }
+  function nextOb() { if (OB >= OB_SLIDES.length - 1) go("login"); else { OB++; renderCur(); } }
+
+  /* ---------- router ---------- */
+  var TABS = [
+    { id: "home", label: "الرئيسية", icon: ICONS.home },
+    { id: "bookings", label: "مواعيدي", icon: ICONS.cal },
+    { id: "services", label: "", icon: ICONS.plus, fab: true },
+    { id: "reports", label: "التقارير", icon: ICONS.file },
+    { id: "profile", label: "حسابي", icon: ICONS.user }
+  ];
+  var NO_TAB = ["splash", "onboarding", "login", "services", "staff", "schedule", "confirm", "success"];
+  var LEGACY = { "scr-home": "home", "scr-packages": "packages", "scr-booking": "services", "scr-contact": "contact" };
+  var KEY = (function () {
+    var q = new URLSearchParams(location.search);
+    var k = q.get("screen") || (q.get("preview") === "login" ? "login" : "");
+    k = LEGACY[k] || k;
+    return SCREENS[k] ? k : "home";
+  })();
+
+  function go(id) { KEY = id; renderCur(); }
+
+  function renderCur() {
+    var sc = document.getElementById("screen"), tb = document.getElementById("tabbar");
+    sc.innerHTML = (SCREENS[KEY] || SCREENS.home)();
+    sc.scrollTop = 0;
+    document.body.style.background = KEY === "splash" ? "var(--green-darker)" : "var(--cream)";
+    if (NO_TAB.indexOf(KEY) !== -1) {
+      tb.style.display = "none";
+    } else {
+      tb.style.display = "";
+      tb.innerHTML = TABS.map(function (t) {
+        if (t.fab) return '<div class="fab" onclick="go(\'services\')">' + t.icon + '</div>';
+        return '<div class="tb' + (t.id === KEY ? " on" : "") + '" onclick="go(\'' + t.id + '\')">' + t.icon + '<span>' + t.label + '</span></div>';
+      }).join("");
+    }
+    try { history.replaceState(null, "", "?screen=" + KEY); } catch (e) { }
+  }
+
+  renderCur();
+</script>
+</body>
+</html>
