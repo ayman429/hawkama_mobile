@@ -232,13 +232,12 @@ ThemeData buildAppTheme(Brightness brightness) {
       onSurface: colors.text,
     ),
     dialogTheme: DialogThemeData(backgroundColor: colors.surface),
-    extensions: const [],
+    extensions: [colors],
   );
   return base.copyWith(
     textTheme: GoogleFonts.ibmPlexSansArabicTextTheme(base.textTheme).apply(
       bodyColor: colors.text,
       displayColor: colors.text,
     ),
-    extensions: [colors],
   );
 }
