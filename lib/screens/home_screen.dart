@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../api/models.dart';
 import '../api/repo.dart';
+import '../core/auth_gate.dart';
 import '../core/theme.dart';
 import '../core/utils.dart';
 import '../l10n/strings.dart';
@@ -30,7 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    AuthStore.instance.addListener(_load);
     _load();
+  }
+
+  @override
+  void dispose() {
+    AuthStore.instance.removeListener(_load);
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -91,10 +99,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const NotificationsScreen())),
+                    onTap: () async {
+                      final ok = await ensureLoggedIn(context);
+                      if (!mounted) return;
+                      if (!ok) return;
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const NotificationsScreen()));
+                      if (!mounted) return;
+                      _load();
+                    },
                     child: Container(
                       width: 38,
                       height: 38,
@@ -177,10 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 SectionHeader(tr('quickActions')),
                 Row(children: [
                   _QuickAction(Icons.add, tr('newBooking'), _startBooking),
-                  _QuickAction(Icons.calendar_month_outlined,
-                      tr('myBookings'), () => shellIndex.value = 1),
+                  _QuickAction(Icons.calendar_month_outlined, tr('myBookings'),
+                      () => _openAuthTab(1)),
                   _QuickAction(Icons.description_outlined, tr('myReports'),
-                      () => shellIndex.value = 2),
+                      () => _openAuthTab(2)),
                   _QuickAction(Icons.work_outline, tr('myPackages'), () {
                     Navigator.push(
                         context,
@@ -266,6 +281,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openAuthTab(int index) async {
+    final ok = await ensureLoggedIn(context);
+    if (!ok || !mounted) return;
+    shellIndex.value = index;
   }
 
   void _startBooking() {

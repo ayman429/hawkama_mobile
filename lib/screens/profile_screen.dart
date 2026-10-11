@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../core/auth_gate.dart';
 import '../core/theme.dart';
 import '../core/utils.dart';
 import '../l10n/strings.dart';
 import '../state/auth_store.dart';
 import '../widgets/common.dart';
 import 'contact_screen.dart';
-import 'login_screen.dart';
+import 'main_shell.dart';
 import 'notifications_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -58,10 +59,15 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ]),
                   ),
-                  _MenuItem(Icons.edit_outlined, tr('personalData'), () {}),
-                  _MenuItem(Icons.location_on_outlined, tr('myAddresses'), () {}),
-                  _MenuItem(Icons.credit_card_outlined, tr('paymentMethods'), () {}),
-                  _MenuItem(Icons.notifications_outlined, tr('notifsTitle'), () {
+                  _MenuItem(Icons.edit_outlined, tr('personalData'),
+                      () => ensureLoggedIn(context)),
+                  _MenuItem(Icons.location_on_outlined, tr('myAddresses'),
+                      () => ensureLoggedIn(context)),
+                  _MenuItem(Icons.credit_card_outlined, tr('paymentMethods'),
+                      () => ensureLoggedIn(context)),
+                  _MenuItem(Icons.notifications_outlined, tr('notifsTitle'), () async {
+                    final ok = await ensureLoggedIn(context);
+                    if (!ok || !context.mounted) return;
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -88,13 +94,8 @@ class ProfileScreen extends StatelessWidget {
                       danger: true,
                     )
                   else
-                    _MenuItem(Icons.login, tr('doLogin'), () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const LoginScreen()),
-                          (r) => false);
-                    }),
+                    _MenuItem(Icons.login, tr('doLogin'),
+                        () => ensureLoggedIn(context)),
                 ],
               ),
             ),
@@ -170,12 +171,7 @@ class ProfileScreen extends StatelessWidget {
     );
     if (ok != true || !context.mounted) return;
     await AuthStore.instance.signOut();
-    if (context.mounted) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (r) => false);
-    }
+    shellIndex.value = 0;
   }
 }
 

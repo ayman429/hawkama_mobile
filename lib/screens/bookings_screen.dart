@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api/errors.dart';
 import '../api/models.dart';
 import '../api/repo.dart';
+import '../core/auth_gate.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
 import '../state/auth_store.dart';
@@ -10,7 +11,6 @@ import '../state/booking_store.dart';
 import '../widgets/common.dart';
 import 'booking/consultant_pick_screen.dart';
 import 'booking/service_pick_screen.dart';
-import 'login_screen.dart';
 import 'main_shell.dart';
 
 class BookingsScreen extends StatefulWidget {
@@ -27,7 +27,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
   @override
   void initState() {
     super.initState();
+    AuthStore.instance.addListener(_load);
     _load();
+  }
+
+  @override
+  void dispose() {
+    AuthStore.instance.removeListener(_load);
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -99,8 +106,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  void _goLogin() => Navigator.push(
-      context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+  Future<void> _goLogin() async {
+    final ok = await ensureLoggedIn(context);
+    if (ok && mounted) _load();
+  }
 }
 
 class _Pill extends StatelessWidget {

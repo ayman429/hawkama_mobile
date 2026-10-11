@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../api/errors.dart';
 import '../../core/theme.dart';
+import '../../core/auth_gate.dart';
 import '../../l10n/strings.dart';
-import '../../state/auth_store.dart';
 import '../../state/booking_store.dart';
 import '../../widgets/common.dart';
-import '../login_screen.dart';
 import 'success_screen.dart';
 
 /// Wizard step 4 — summary + quote + submit (API guide §5.6/§5.7).
@@ -26,11 +25,8 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
   bool _busy = false;
 
   Future<void> _submit() async {
-    if (!AuthStore.instance.isAuthed) {
-      await Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()));
-      if (!mounted || !AuthStore.instance.isAuthed) return;
-    }
+    final ok = await ensureLoggedIn(context);
+    if (!ok || !mounted) return;
     setState(() => _busy = true);
     try {
       final result = await BookingStore.instance.submit();

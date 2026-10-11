@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../api/models.dart';
 import '../api/repo.dart';
+import '../core/auth_gate.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
 import '../state/auth_store.dart';
 import '../widgets/common.dart';
-import 'login_screen.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -21,7 +21,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   void initState() {
     super.initState();
+    AuthStore.instance.addListener(_load);
     _load();
+  }
+
+  @override
+  void dispose() {
+    AuthStore.instance.removeListener(_load);
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -55,10 +62,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 if (!AuthStore.instance.isAuthed)
                   EmptyState(Icons.lock_outline, tr('loginToContinue'),
                       cta: tr('doLogin'),
-                      onCta: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const LoginScreen())))
+                      onCta: () async {
+                        final ok = await ensureLoggedIn(context);
+                        if (ok && mounted) _load();
+                      })
                 else if (_reports == null)
                   const SkeletonRows()
                 else if (_reports!.isEmpty)
@@ -92,7 +99,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         if (r.available)
                           InkWell(
                             borderRadius: BorderRadius.circular(10),
-                            onTap: () {
+                            onTap: () async {
+                              final ok = await ensureLoggedIn(context);
+                              if (!ok || !context.mounted) return;
                               // Download needs the Bearer token — native: use
                               // `dio.download` + save to app dir, then
                               // share_plus; see README.

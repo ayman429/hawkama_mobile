@@ -6,15 +6,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeState {
   ThemeState._();
 
-  static final mode = ValueNotifier<ThemeMode>(ThemeMode.system);
+  static final mode = ValueNotifier<ThemeMode>(ThemeMode.light);
   static const _key = 'theme_mode';
 
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     mode.value = switch (prefs.getString(_key)) {
-      'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
-      _ => ThemeMode.system,
+      'system' => ThemeMode.system,
+      _ => ThemeMode.light,
     };
   }
 

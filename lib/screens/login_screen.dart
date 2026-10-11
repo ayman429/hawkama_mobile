@@ -62,8 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
       if (!mounted) return;
-      Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (_) => const MainShell()), (r) => false);
+      _leave();
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {
@@ -75,6 +74,18 @@ class _LoginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Return to the screen that asked for login. If login is the root, open home.
+  void _leave() {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+      return;
+    }
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (r) => false);
   }
 
   @override
@@ -203,10 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 10),
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const MainShell()),
-                      (r) => false),
+                  onTap: _leave,
                   child: Text(tr('continueGuest'),
                       style: TextStyle(
                           fontSize: 10,

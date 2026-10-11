@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../core/auth_gate.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
+import '../state/auth_store.dart';
 import '../state/booking_store.dart';
 import 'booking/service_pick_screen.dart';
 import 'bookings_screen.dart';
@@ -63,10 +65,10 @@ class MainShell extends StatelessWidget {
                 _NavItem(Icons.home_outlined, tr('tabHome'), index == 0,
                     () => shellIndex.value = 0),
                 _NavItem(Icons.calendar_month_outlined, tr('tabBookings'),
-                    index == 1, () => shellIndex.value = 1),
+                    index == 1, () => _openAuthTab(context, 1)),
                 const SizedBox(width: 56),
                 _NavItem(Icons.description_outlined, tr('tabReports'),
-                    index == 2, () => shellIndex.value = 2),
+                    index == 2, () => _openAuthTab(context, 2)),
                 _NavItem(Icons.person_outline, tr('tabProfile'), index == 3,
                     () => shellIndex.value = 3),
               ],
@@ -75,6 +77,14 @@ class MainShell extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _openAuthTab(BuildContext context, int index) async {
+    if (!AuthStore.instance.isAuthed) {
+      final ok = await ensureLoggedIn(context);
+      if (!ok || !context.mounted) return;
+    }
+    shellIndex.value = index;
   }
 }
 

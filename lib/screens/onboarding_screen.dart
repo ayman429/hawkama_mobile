@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
 import '../widgets/common.dart';
-import 'login_screen.dart';
+import 'main_shell.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -24,17 +24,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _titleKeys = ['ob1t', 'ob2t', 'ob3t'];
   static const _bodyKeys = ['ob1p', 'ob2p', 'ob3p'];
 
-  Future<void> _goToLogin() async {
+  Future<void> _goHomeAsGuest() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_seen', true);
     if (!mounted) return;
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+        context, MaterialPageRoute(builder: (_) => const MainShell()));
   }
 
   void _next() {
     if (_index >= 2) {
-      _goToLogin();
+      _goHomeAsGuest();
     } else {
       setState(() => _index++);
     }
@@ -52,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GestureDetector(
-                onTap: _goToLogin,
+                onTap: _goHomeAsGuest,
                 child: Text(tr('skip'),
                     style: TextStyle(
                         fontSize: 10,

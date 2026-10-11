@@ -30,7 +30,10 @@ class AuthStore extends ChangeNotifier {
       try {
         user = await Repo.me();
       } catch (_) {
-        user = null; // stale/expired token — stays guest until next login
+        // Stale token must not count as signed-in, or guest actions skip login.
+        user = null;
+        AuthTokenHolder.token = null;
+        await _storage.delete(key: _tokenKey);
       }
     }
     _ready = true;
@@ -68,11 +71,19 @@ class AuthStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _signingOut = false;
+
   Future<void> signOut() async {
-    await Repo.logout();
-    AuthTokenHolder.token = null;
-    user = null;
-    await _storage.delete(key: _tokenKey);
-    notifyListeners();
+    if (_signingOut) return;
+    _signingOut = true;
+    try {
+      if (AuthTokenHolder.token != null) await Repo.logout();
+    } finally {
+      AuthTokenHolder.token = null;
+      user = null;
+      await _storage.delete(key: _tokenKey);
+      _signingOut = false;
+      notifyListeners();
+    }
   }
 }

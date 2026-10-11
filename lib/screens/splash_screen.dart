@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _route();
   }
 
-  /// mobile.md §4.0: valid token → straight home; onboarding once (persisted).
+  /// Signed-in users go home. Guests see onboarding once, then home as guest.
   Future<void> _route() async {
     await Future.delayed(const Duration(milliseconds: 1400));
     if (!mounted) return;
@@ -33,11 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     final prefs = await SharedPreferences.getInstance();
     final seen = prefs.getBool('onboarding_seen') ?? false;
-    if (seen) {
-      setState(() {}); // show the CTA version of the splash
-      return;
-    }
-    _go(const OnboardingScreen());
+    _go(seen ? const MainShell() : const OnboardingScreen());
   }
 
   void _go(Widget screen) => Navigator.pushReplacement(
@@ -45,8 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final showCtas =
-        AuthStore.instance.ready && !(AuthStore.instance.isAuthed);
     return Scaffold(
       backgroundColor: AppColors.greenDarker,
       body: Container(
@@ -86,28 +80,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       fontSize: 10.5, color: AppColors.goldLight, height: 1.9),
                 ),
                 const SizedBox(height: 26),
-                if (!showCtas)
-                  const CircularProgressIndicator(
-                      color: AppColors.goldLight, strokeWidth: 2)
-                else ...[
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 220),
-                    child: AppButton(
-                      tr('getStarted'),
-                      variant: AppButtonVariant.gold,
-                      onTap: () => _go(const OnboardingScreen()),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 220),
-                    child: AppButton(
-                      tr('continueGuest'),
-                      variant: AppButtonVariant.ghostOnDark,
-                      onTap: () => _go(const MainShell()),
-                    ),
-                  ),
-                ],
+                const CircularProgressIndicator(
+                    color: AppColors.goldLight, strokeWidth: 2),
               ],
             ),
           ),

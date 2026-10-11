@@ -4,11 +4,10 @@ import '../../api/models.dart';
 import '../../api/repo.dart';
 import '../../core/theme.dart';
 import '../../core/utils.dart';
+import '../../core/auth_gate.dart';
 import '../../l10n/strings.dart';
-import '../../state/auth_store.dart';
 import '../../state/booking_store.dart';
 import '../../widgets/common.dart';
-import '../login_screen.dart';
 import 'confirm_screen.dart';
 
 /// Wizard step 3 — month calendar from PUB-05 (available-dates) + slot grid
@@ -73,14 +72,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Future<void> _continue() async {
-    if (!AuthStore.instance.isAuthed) {
-      // mobile.md §7: guests browse steps 1–3; force login before confirming.
-      showToast(context, tr('loginToContinue'), icon: Icons.lock_outline);
-      await Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()));
-      if (!mounted || !AuthStore.instance.isAuthed) return;
-    }
-    if (!mounted) return;
+    final ok = await ensureLoggedIn(context);
+    if (!ok || !mounted) return;
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => const ConfirmScreen()));
   }

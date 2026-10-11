@@ -4,6 +4,7 @@ import '../api/models.dart';
 import '../api/repo.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
+import '../state/auth_store.dart';
 import '../state/booking_store.dart';
 import '../widgets/common.dart';
 import 'booking/consultant_pick_screen.dart';
@@ -28,7 +29,9 @@ class _PackagesScreenState extends State<PackagesScreen> {
   Future<void> _load() async {
     try {
       final pkgs = await Repo.packages();
-      final subs = await Repo.activeSubscriptions();
+      final subs = AuthStore.instance.isAuthed
+          ? await Repo.activeSubscriptions()
+          : const <Subscription>[];
       if (mounted) setState(() {
         _packages = pkgs;
         _subs = subs;

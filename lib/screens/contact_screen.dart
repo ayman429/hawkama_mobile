@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../api/errors.dart';
 import '../api/repo.dart';
+import '../core/auth_gate.dart';
 import '../core/config.dart';
 import '../core/theme.dart';
 import '../l10n/strings.dart';
@@ -27,6 +28,8 @@ class _ContactScreenState extends State<ContactScreen> {
   }
 
   Future<void> _send() async {
+    final ok = await ensureLoggedIn(context);
+    if (!ok || !mounted) return;
     setState(() => _busy = true);
     try {
       await Repo.sendSupportMessage(_subject.text.trim(), _message.text.trim());
