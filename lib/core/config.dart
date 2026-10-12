@@ -7,7 +7,7 @@
 ///   flutter build apk --dart-define=USE_MOCK=false \
 ///               --dart-define=API_URL=https://staging-api.gcmc.sa/api/v1
 class AppConfig {
-  /// true = screens use the in-memory demo data from lib/api/repo.dart.
+  /// true = repositories use the in-memory demo data in lib/core/mock.
   /// false = all data goes through the real GCMC API.
   static const useMock = bool.fromEnvironment('USE_MOCK', defaultValue: true);
 
@@ -27,5 +27,4 @@ class AppConfig {
   /// Brand contact fallbacks (normally supplied by GET /public/meta).
   static const contactPhone = '+966 550181166';
   static const contactEmail = 'GCMC@GCMC.SA';
-  static const contactAddress = 'الرياض — طريق العروبة';
 }

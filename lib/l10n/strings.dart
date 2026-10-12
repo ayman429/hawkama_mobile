@@ -32,35 +32,60 @@ String tr(String key, [Map<String, String>? params]) {
   return value;
 }
 
-/// Locale-aware digits: Arab-Indic in ar (mobile.md §1), ASCII in en.
+/// Locale-aware digits: Arab-Indic in ar, ASCII in en.
 String locNum(Object n) => L10n.isAr ? arNum(n) : '$n';
 
+/// First character for an avatar, or the localized unknown mark.
+String avatarInitial(String? name) {
+  final trimmed = name?.trim() ?? '';
+  if (trimmed.isEmpty) return tr('unknownInitial');
+  return trimmed[0];
+}
+
+const _arMonths = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+];
 const _enMonths = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/// DateTime.weekday 1 = Monday … 7 = Sunday.
+const _arWeekdays = [
+  'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد',
 ];
 const _enWeekdays = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
 ];
 
+/// Calendar header, Sunday-first.
+const _arWeekHeader = ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+const _enWeekHeader = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+List<String> get locMonths => L10n.isAr ? _arMonths : _enMonths;
+List<String> get locWeekHeader => L10n.isAr ? _arWeekHeader : _enWeekHeader;
+
 /// Locale-aware "HH:MM" → ar: "٠٩:٣٠ ص" / en: "9:30 AM".
 String locTime(String hhmm) {
-  if (L10n.isAr) return arTime(hhmm);
   final parts = hhmm.split(':');
   var h = int.tryParse(parts.first) ?? 0;
   final m = parts.length > 1 ? parts[1] : '00';
-  final suffix = h < 12 ? 'AM' : 'PM';
+  final suffix = tr(h < 12 ? 'am' : 'pm');
   if (h == 0) h = 12;
   if (h > 12) h -= 12;
-  return '$h:$m $suffix';
+  if (!L10n.isAr) return '$h:$m $suffix';
+  final hh = arNum(h.toString().padLeft(2, '0'));
+  return '$hh:${arNum(m)} $suffix';
 }
 
 /// Locale-aware "2026-10-14" → ar: "الثلاثاء ١٤ أكتوبر" / en: "Tuesday 14 October".
 String locDate(String ymd) {
   final d = DateTime.tryParse(ymd);
   if (d == null) return ymd;
-  if (L10n.isAr) return arDate(ymd);
-  return '${_enWeekdays[d.weekday - 1]} ${d.day} ${_enMonths[d.month - 1]}';
+  final weekdays = L10n.isAr ? _arWeekdays : _enWeekdays;
+  final day = L10n.isAr ? arNum(d.day) : '${d.day}';
+  return '${weekdays[d.weekday - 1]} $day ${locMonths[d.month - 1]}';
 }
 
 /// Locale-aware "2026-10-14" + "09:30" combined.
@@ -234,6 +259,63 @@ const _t = <String, Map<String, String>>{
     'serverUnreachable': 'تعذّر الاتصال بالخادم',
     'unexpected': 'حدث خطأ غير متوقع',
     'loading': 'جارٍ التحميل…',
+    'am': 'ص',
+    'pm': 'م',
+    'unknownInitial': '؟',
+    'demoClient': 'عميل تجريبي',
+    'defaultClient': 'العميل',
+    'fallbackNotif': 'إشعار',
+    'fallbackReport': 'تقرير',
+    'jobsFallback': '٢٠٠+ استشارة',
+    'statusPending': 'قيد الانتظار',
+    'statusPendingPayment': 'في انتظار الدفع',
+    'statusCompleted': 'مكتمل',
+    'statusCancelled': 'ملغي',
+    'contactAddress': 'الرياض — طريق العروبة',
+    'mockUserName': 'أحمد المطيري',
+    'mockCompany': 'شركة الاختبار',
+    'mockPkgIron': 'الباقة الحديدية',
+    'mockFeatIron1': 'استشارتان شهرياً',
+    'mockFeatIron2': 'مراجعة مستندين',
+    'mockFeatIron3': 'تقرير ربع سنوي',
+    'mockPkgSilver': 'الباقة الفضية',
+    'mockFeatSilver1': '٥ استشارات شهرياً',
+    'mockFeatSilver2': 'مراجعة ٨ مستندات',
+    'mockFeatSilver3': 'تقرير أداء شهري',
+    'mockPkgGold': 'الباقة الذهبية',
+    'mockFeatGold1': 'استشارات غير محدودة',
+    'mockFeatGold2': 'مستشار مخصص',
+    'mockFeatGold3': 'دعم 24/7',
+    'mockCons1Name': 'د. سارة الدوسري',
+    'mockCons1Title': 'متخصصة الحوكمة والامتثال',
+    'mockCons1Spec': 'الحوكمة والامتثال',
+    'mockCons1Jobs': '٣٢٠ استشارة',
+    'mockCons2Name': 'أ. أحمد العتيبي',
+    'mockCons2Title': 'مستشار الاستشارات الإدارية',
+    'mockCons2Spec': 'الاستشارات الإدارية',
+    'mockCons2Jobs': '٢٨٠ استشارة',
+    'mockCons3Name': 'أ. نورة القحطاني',
+    'mockCons3Title': 'استشارية مخاطر وامتثال',
+    'mockCons3Spec': 'إدارة المخاطر',
+    'mockCons3Jobs': '٢١٠ استشارات',
+    'mockReport1Title': 'تقرير الأداء الشهري — سبتمبر',
+    'mockReport1Meta': '٠٢ أكتوبر ٢٠٢٦ · PDF · ١٫٢ م.ب',
+    'mockReport2Title': 'تقرير الأداء الشهري — أغسطس',
+    'mockReport2Meta': '٠٢ سبتمبر ٢٠٢٦ · PDF · ١٫١ م.ب',
+    'mockReport3Title': 'تقرير الامتثال الربع سنوي Q3',
+    'mockReport3Meta': 'يُصدر بنهاية أكتوبر',
+    'mockNotif1Title': 'تم تأكيد حجزك',
+    'mockNotif1Body': 'استشارة الحوكمة مع د. سارة يوم الثلاثاء الساعة ١٠:٠٠ ص',
+    'mockNotif1Time': 'قبل ٥ دقائق',
+    'mockNotif2Title': 'تقرير جديد متاح',
+    'mockNotif2Body': 'تقرير الأداء الشهري لشهر سبتمبر جاهز الآن',
+    'mockNotif2Time': 'قبل ساعتين',
+    'mockNotif3Title': 'تذكير بموعدك',
+    'mockNotif3Body': 'موعدك غداً الساعة ١٢:٠٠ م — الجلسة عبر Google Meet',
+    'mockNotif3Time': 'أمس',
+    'mockNotif4Title': 'تم الدفع بنجاح',
+    'mockNotif4Body': 'اشتراك الباقة الفضية — ٤٬٥٠٠ ر.س',
+    'mockNotif4Time': 'قبل ٣ أيام',
   },
   'en': {
     'brand': 'Governance & Compliance — GCMC',
@@ -385,5 +467,62 @@ const _t = <String, Map<String, String>>{
     'serverUnreachable': 'Could not reach the server',
     'unexpected': 'Something went wrong',
     'loading': 'Loading…',
+    'am': 'AM',
+    'pm': 'PM',
+    'unknownInitial': '?',
+    'demoClient': 'Demo client',
+    'defaultClient': 'Client',
+    'fallbackNotif': 'Notification',
+    'fallbackReport': 'Report',
+    'jobsFallback': '200+ consultations',
+    'statusPending': 'Pending',
+    'statusPendingPayment': 'Awaiting payment',
+    'statusCompleted': 'Completed',
+    'statusCancelled': 'Cancelled',
+    'contactAddress': 'Riyadh — Al Urubah Road',
+    'mockUserName': 'Ahmed Al-Mutairi',
+    'mockCompany': 'Test Company',
+    'mockPkgIron': 'Iron plan',
+    'mockFeatIron1': 'Two consultations a month',
+    'mockFeatIron2': 'Two document reviews',
+    'mockFeatIron3': 'Quarterly report',
+    'mockPkgSilver': 'Silver plan',
+    'mockFeatSilver1': 'Five consultations a month',
+    'mockFeatSilver2': 'Eight document reviews',
+    'mockFeatSilver3': 'Monthly performance report',
+    'mockPkgGold': 'Gold plan',
+    'mockFeatGold1': 'Unlimited consultations',
+    'mockFeatGold2': 'Dedicated consultant',
+    'mockFeatGold3': '24/7 support',
+    'mockCons1Name': 'Dr. Sarah Al-Dosari',
+    'mockCons1Title': 'Governance and compliance specialist',
+    'mockCons1Spec': 'Governance and compliance',
+    'mockCons1Jobs': '320 consultations',
+    'mockCons2Name': 'Ahmad Al-Otaibi',
+    'mockCons2Title': 'Management consulting advisor',
+    'mockCons2Spec': 'Management consulting',
+    'mockCons2Jobs': '280 consultations',
+    'mockCons3Name': 'Noura Al-Qahtani',
+    'mockCons3Title': 'Risk and compliance advisor',
+    'mockCons3Spec': 'Risk management',
+    'mockCons3Jobs': '210 consultations',
+    'mockReport1Title': 'Monthly performance report — September',
+    'mockReport1Meta': '02 October 2026 · PDF · 1.2 MB',
+    'mockReport2Title': 'Monthly performance report — August',
+    'mockReport2Meta': '02 September 2026 · PDF · 1.1 MB',
+    'mockReport3Title': 'Q3 quarterly compliance report',
+    'mockReport3Meta': 'Issued at the end of October',
+    'mockNotif1Title': 'Your booking is confirmed',
+    'mockNotif1Body': 'Governance session with Dr. Sarah on Tuesday at 10:00 AM',
+    'mockNotif1Time': '5 minutes ago',
+    'mockNotif2Title': 'A new report is available',
+    'mockNotif2Body': 'The September performance report is ready',
+    'mockNotif2Time': '2 hours ago',
+    'mockNotif3Title': 'Appointment reminder',
+    'mockNotif3Body': 'Your session is tomorrow at 12:00 PM on Google Meet',
+    'mockNotif3Time': 'Yesterday',
+    'mockNotif4Title': 'Payment successful',
+    'mockNotif4Body': 'Silver plan subscription — SAR 4,500',
+    'mockNotif4Time': '3 days ago',
   },
 };

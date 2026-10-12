@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../screens/login_screen.dart';
-import '../state/auth_store.dart';
+import 'routes.dart';
+import '../features/auth/cubit/auth_cubit.dart';
 
-/// Pushes login only when the current action needs an account.
-/// Returns true if the user is signed in when this completes.
 Future<bool> ensureLoggedIn(BuildContext context) async {
-  if (AuthStore.instance.isAuthed) return true;
-  await Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => const LoginScreen()),
-  );
-  return AuthStore.instance.isAuthed;
+  if (context.read<AuthCubit>().state.isAuthed) return true;
+  await context.push(AppRoutes.login);
+  if (!context.mounted) return false;
+  return context.read<AuthCubit>().state.isAuthed;
 }
