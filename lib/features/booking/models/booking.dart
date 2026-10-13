@@ -25,6 +25,10 @@ class Booking {
   final BookingMini? consultant;
   final int? consultantId;
   final String? meetingUrl;
+  final int durationMinutes;
+  final String clientNotes;
+  final String locationLabel;
+  final String paymentLabel;
 
   const Booking({
     required this.id,
@@ -41,6 +45,10 @@ class Booking {
     this.consultant,
     this.consultantId,
     this.meetingUrl,
+    this.durationMinutes = 0,
+    this.clientNotes = '',
+    this.locationLabel = '',
+    this.paymentLabel = '',
   });
 
   bool get isUpcoming => status == 'pending' || status == 'pending_payment';
@@ -69,8 +77,61 @@ class Booking {
       consultant: consultant.isEmpty ? null : BookingMini.fromJson(consultant),
       consultantId: consultant.isEmpty ? null : asInt(consultant['id']),
       meetingUrl: meeting['url'] as String?,
+      durationMinutes: asInt(json['duration_minutes']),
+      clientNotes: asString(json['client_notes']),
+      locationLabel: _locationLabel(json['location']),
+      paymentLabel: _paymentLabel(json['payment']),
     );
   }
+
+  Booking copyWith({
+    int? durationMinutes,
+    String? clientNotes,
+    String? locationLabel,
+    String? paymentLabel,
+  }) {
+    return Booking(
+      id: id,
+      reference: reference,
+      status: status,
+      statusLabel: statusLabel,
+      paymentStatus: paymentStatus,
+      refundStatus: refundStatus,
+      reportStatus: reportStatus,
+      date: date,
+      time: time,
+      amountFormatted: amountFormatted,
+      package: package,
+      consultant: consultant,
+      consultantId: consultantId,
+      meetingUrl: meetingUrl,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      clientNotes: clientNotes ?? this.clientNotes,
+      locationLabel: locationLabel ?? this.locationLabel,
+      paymentLabel: paymentLabel ?? this.paymentLabel,
+    );
+  }
+}
+
+String _locationLabel(Object? value) {
+  final location = asMap(value);
+  if (location.isEmpty) return '';
+  return [
+    asString(location['name']),
+    asString(location['city']),
+    asString(location['address']),
+  ].where((part) => part.isNotEmpty).join(' — ');
+}
+
+String _paymentLabel(Object? value) {
+  final payment = asMap(value);
+  if (payment.isEmpty) return '';
+  final display = asString(payment['display']);
+  if (display.isNotEmpty) return display;
+  final brand = asString(payment['card_brand']);
+  final last = asString(payment['card_last_four']);
+  if (brand.isEmpty && last.isEmpty) return asString(payment['status']);
+  return '$brand •••• $last'.trim();
 }
 
 class BookingCreateResult {

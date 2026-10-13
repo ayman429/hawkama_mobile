@@ -267,7 +267,7 @@ class _HeroCard extends StatelessWidget {
           const SizedBox(height: 10),
           InkWell(
             borderRadius: BorderRadius.circular(8),
-            onTap: () => context.read<ShellCubit>().select(1),
+            onTap: () => context.push(AppRoutes.bookingDetailOf(booking.id)),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(

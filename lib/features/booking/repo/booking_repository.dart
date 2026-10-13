@@ -1,6 +1,7 @@
 import '../../../core/config.dart';
 import '../../../core/mock/mock_catalog.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/network/endpoints.dart';
 import '../../../core/network/json_parse.dart';
 import '../../../core/network/result.dart';
@@ -129,6 +130,32 @@ class BookingRepository {
         transactionUrl: payment['transaction_url'] as String?,
         paymentId: payment['id'] as int?,
       );
+    });
+  }
+
+  Future<Result<Booking>> booking(int id) {
+    return guard(() async {
+      if (AppConfig.useMock) {
+        await Future.delayed(const Duration(milliseconds: 150));
+        final found = mockBookings.where((item) => item.id == id);
+        if (found.isEmpty) {
+          throw ApiException(tr('loadFailed'), code: 'NOT_FOUND', statusCode: 404);
+        }
+        final item = found.first;
+        return item.copyWith(
+          durationMinutes: item.durationMinutes == 0 ? 30 : item.durationMinutes,
+          clientNotes: item.clientNotes.isEmpty && item.id == 5
+              ? tr('mockBookingNote')
+              : item.clientNotes,
+          locationLabel: item.locationLabel.isEmpty
+              ? '${tr('mockLocName')} — ${tr('mockLocCity')} — ${tr('mockLocAddress')}'
+              : item.locationLabel,
+          paymentLabel: item.paymentLabel.isNotEmpty
+              ? item.paymentLabel
+              : (item.paymentStatus == 'paid' ? 'Visa •••• 4242' : item.paymentStatus),
+        );
+      }
+      return Booking.fromJson(asMap(await _api.get(Endpoints.booking(id))));
     });
   }
 

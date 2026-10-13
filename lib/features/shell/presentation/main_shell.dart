@@ -71,13 +71,7 @@ class _MainShellState extends State<MainShell> {
         child: const Icon(Icons.add, size: 26, color: AppColors.greenDarker),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: c.surface,
-        surfaceTintColor: c.surface,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 7,
-        height: 56,
-        padding: EdgeInsets.zero,
+      bottomNavigationBar: _NotchedNavBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -103,6 +97,50 @@ class _MainShellState extends State<MainShell> {
     }
     context.read<ShellCubit>().select(index);
   }
+}
+
+/// Same center notch as [BottomAppBar] + [CircularNotchedRectangle], without
+/// reading [Scaffold.geometryOf] during hit tests. That read asserts in
+/// current Flutter and crashes the first tap after the shell appears.
+class _NotchedNavBar extends StatelessWidget {
+  final Widget child;
+  const _NotchedNavBar({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.paddingOf(context).bottom;
+    return PhysicalShape(
+      clipper: const _CenterNotchClipper(),
+      clipBehavior: Clip.antiAlias,
+      elevation: 8,
+      color: context.col.surface,
+      shadowColor: const Color(0x33000000),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottom),
+        child: SizedBox(height: 56, child: child),
+      ),
+    );
+  }
+}
+
+class _CenterNotchClipper extends CustomClipper<Path> {
+  const _CenterNotchClipper();
+
+  @override
+  Path getClip(Size size) {
+    const fabRadius = 28.0;
+    const margin = 7.0;
+    return const CircularNotchedRectangle().getOuterPath(
+      Offset.zero & size,
+      Rect.fromCircle(
+        center: Offset(size.width / 2, 0),
+        radius: fabRadius + margin,
+      ),
+    );
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 class _NavItem extends StatelessWidget {

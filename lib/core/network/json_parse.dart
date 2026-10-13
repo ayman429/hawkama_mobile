@@ -11,6 +11,9 @@ int asInt(Object? value) => value is int ? value : int.tryParse('$value') ?? 0;
 
 int? asIntOrNull(Object? value) => value == null ? null : asInt(value);
 
+bool asBool(Object? value) =>
+    value == true || value == 1 || value == '1' || value == 'true';
+
 List<T> asList<T>(Object? data, T Function(Map<String, dynamic>) parse) {
   if (data is! List) return [];
   return data

@@ -9,12 +9,12 @@
 class AppConfig {
   /// true = repositories use the in-memory demo data in lib/core/mock.
   /// false = all data goes through the real GCMC API.
-  static const useMock = bool.fromEnvironment('USE_MOCK', defaultValue: true);
+  static const useMock = bool.fromEnvironment('USE_MOCK', defaultValue: false);
 
   /// Base URL of the API (…/api/v1). Local default matches the API guide §1.1.
   static const apiBaseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://localhost:8000/api/v1',
+    defaultValue: 'https://www.gcmc.sa/api/v1',//'http://localhost:8000/api/v1',
   );
 
   /// WebSocket host (Laravel Reverb) — reserved for the real-time bell

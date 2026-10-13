@@ -9,6 +9,7 @@ import '../features/booking/repo/booking_repository.dart';
 import '../features/home/repo/home_repository.dart';
 import '../features/notifications/repo/notifications_repository.dart';
 import '../features/packages/repo/packages_repository.dart';
+import '../features/profile/repo/profile_repository.dart';
 import '../features/reports/repo/reports_repository.dart';
 import '../features/shell/cubit/shell_cubit.dart';
 import '../features/support/repo/support_repository.dart';
@@ -43,6 +44,7 @@ Future<void> initDependencies() async {
     () => NotificationsRepository(getIt()),
   );
   getIt.registerLazySingleton<SupportRepository>(() => SupportRepository(getIt()));
+  getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepository(getIt()));
   getIt.registerLazySingleton<AuthCubit>(() => AuthCubit(getIt(), getIt()));
   getIt.registerLazySingleton<BookingDraftCubit>(() => BookingDraftCubit(getIt()));
   getIt.registerLazySingleton<ShellCubit>(ShellCubit.new);

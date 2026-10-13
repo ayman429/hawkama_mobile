@@ -11,4 +11,10 @@ class AppRoutes {
   static const bookingSchedule = '/booking/schedule';
   static const bookingConfirm = '/booking/confirm';
   static const bookingSuccess = '/booking/success';
+  static const bookingDetail = '/bookings/:id';
+  static const personalData = '/profile/personal';
+  static const addresses = '/profile/addresses';
+  static const paymentMethods = '/profile/payment-methods';
+
+  static String bookingDetailOf(int id) => '/bookings/$id';
 }

@@ -80,6 +80,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state.copyWith(clearError: true));
   }
 
+  void applyUser(ClientUser user) {
+    if (!state.isAuthed || isClosed) return;
+    emit(state.copyWith(ready: true, user: user));
+  }
+
   Future<void> refreshProfile() async {
     if (!state.isAuthed) return;
     final result = await _repository.me();

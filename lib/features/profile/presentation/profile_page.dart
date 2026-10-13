@@ -70,12 +70,21 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ]),
                   ),
-                  _MenuItem(Icons.edit_outlined, tr('personalData'),
-                      () => ensureLoggedIn(context)),
-                  _MenuItem(Icons.location_on_outlined, tr('myAddresses'),
-                      () => ensureLoggedIn(context)),
-                  _MenuItem(Icons.credit_card_outlined, tr('paymentMethods'),
-                      () => ensureLoggedIn(context)),
+                  _MenuItem(Icons.edit_outlined, tr('personalData'), () async {
+                    final ok = await ensureLoggedIn(context);
+                    if (!ok || !context.mounted) return;
+                    context.push(AppRoutes.personalData);
+                  }),
+                  _MenuItem(Icons.location_on_outlined, tr('myAddresses'), () async {
+                    final ok = await ensureLoggedIn(context);
+                    if (!ok || !context.mounted) return;
+                    context.push(AppRoutes.addresses);
+                  }),
+                  _MenuItem(Icons.credit_card_outlined, tr('paymentMethods'), () async {
+                    final ok = await ensureLoggedIn(context);
+                    if (!ok || !context.mounted) return;
+                    context.push(AppRoutes.paymentMethods);
+                  }),
                   _MenuItem(Icons.notifications_outlined, tr('notifsTitle'), () async {
                     final ok = await ensureLoggedIn(context);
                     if (!ok || !context.mounted) return;

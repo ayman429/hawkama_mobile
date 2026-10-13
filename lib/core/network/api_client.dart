@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../config.dart';
 import '../../l10n/strings.dart';
@@ -12,7 +13,7 @@ import 'session_events.dart';
 class ApiClient {
   ApiClient(this._session) {
     _dio = Dio(BaseOptions(
-      baseUrl: AppConfig.apiBaseUrl,
+      baseUrl:'https://www.gcmc.sa/api/v1',// AppConfig.apiBaseUrl,
       headers: const {
         'Accept': 'application/json',
         'Accept-Language': 'ar',
@@ -43,6 +44,28 @@ class ApiClient {
         ));
       },
     ));
+    if (kDebugMode) {
+      _dio.interceptors.add(InterceptorsWrapper(
+        onResponse: (response, handler) {
+          _logHttp(
+            response.requestOptions.method,
+            response.requestOptions.uri,
+            response.statusCode,
+            response.data,
+          );
+          handler.next(response);
+        },
+        onError: (error, handler) {
+          _logHttp(
+            error.requestOptions.method,
+            error.requestOptions.uri,
+            error.response?.statusCode,
+            error.response?.data ?? error.message,
+          );
+          handler.next(error);
+        },
+      ));
+    }
   }
 
   final SessionEvents _session;
@@ -54,8 +77,13 @@ class ApiClient {
   Future<dynamic> post(String path, [Object? data]) =>
       _unwrap(() => _dio.post(path, data: data));
 
+  Future<dynamic> put(String path, [Object? data]) =>
+      _unwrap(() => _dio.put(path, data: data));
+
   Future<dynamic> patch(String path, [Object? data]) =>
       _unwrap(() => _dio.patch(path, data: data));
+
+  Future<dynamic> delete(String path) => _unwrap(() => _dio.delete(path));
 
   Future<dynamic> _unwrap(Future<Response<dynamic>> Function() call) async {
     try {
@@ -91,6 +119,16 @@ class ApiClient {
       statusCode: error.response?.statusCode,
       fieldErrors: fieldErrors,
     );
+  }
+}
+
+void _logHttp(String method, Uri uri, int? status, Object? body) {
+  debugPrint('API $method $uri → ${status ?? '-'}');
+  final text = body?.toString() ?? '';
+  const size = 800;
+  for (var start = 0; start < text.length; start += size) {
+    final end = start + size > text.length ? text.length : start + size;
+    debugPrint(text.substring(start, end));
   }
 }
 

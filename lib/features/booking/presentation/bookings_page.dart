@@ -192,7 +192,7 @@ class _BookingCard extends StatelessWidget {
               padV: 8,
               fontSize: 10,
               onTap: upcoming
-                  ? (booking.meetingUrl == null ? () {} : () {})
+                  ? () => context.push(AppRoutes.bookingDetailOf(booking.id))
                   : () => context.read<ShellCubit>().select(2),
             ),
           ),
