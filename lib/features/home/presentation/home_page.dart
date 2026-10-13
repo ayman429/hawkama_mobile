@@ -107,12 +107,8 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 if (home.loading)
-                  Container(
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: c.chipBg,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                  const SkeletonPulse(
+                    child: SkeletonBox(height: 132, radius: 16),
                   )
                 else if (next != null)
                   _HeroCard(next)
@@ -150,25 +146,39 @@ class HomePage extends StatelessWidget {
                   }),
                 ]),
                 const SizedBox(height: 14),
-                Row(children: [
-                  Expanded(child: _Stat(locNum(dash?.reportsTotal ?? 0), tr('statReports'))),
-                  const SizedBox(width: 8),
-                  Expanded(child: _Stat(locNum(dash?.upcomingCount ?? 0), tr('statUpcoming'))),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _Stat(
-                      dash?.currentPackageName.isNotEmpty == true
-                          ? dash!.currentPackageName
-                          : tr('noPackage'),
-                      tr('statPackage'),
-                      small: true,
+                if (home.loading)
+                  const SkeletonPulse(
+                    child: Row(children: [
+                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
+                      SizedBox(width: 8),
+                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
+                      SizedBox(width: 8),
+                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
+                    ]),
+                  )
+                else
+                  Row(children: [
+                    Expanded(child: _Stat(locNum(dash?.reportsTotal ?? 0), tr('statReports'))),
+                    const SizedBox(width: 8),
+                    Expanded(child: _Stat(locNum(dash?.upcomingCount ?? 0), tr('statUpcoming'))),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _Stat(
+                        dash?.currentPackageName.isNotEmpty == true
+                            ? dash!.currentPackageName
+                            : tr('noPackage'),
+                        tr('statPackage'),
+                        small: true,
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
                 const SizedBox(height: 12),
                 SectionHeader(tr('ourServices'), action: tr('viewAll'), onAction: () => _startBooking(context)),
-                for (var i = 0; i < home.services.length && i < 2; i++)
-                  _MiniService(pkg: home.services[i]),
+                if (home.loading)
+                  const SkeletonRows(count: 2)
+                else
+                  for (var i = 0; i < home.services.length && i < 2; i++)
+                    _MiniService(pkg: home.services[i]),
                 GestureDetector(
                   onTap: () => context.push(AppRoutes.packages),
                   child: Container(

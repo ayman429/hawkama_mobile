@@ -8,6 +8,8 @@ class ClientUser {
   final String phone;
   final String companyName;
   final String? avatarUrl;
+  final int? defaultLocationId;
+  final int? defaultPaymentMethodId;
 
   const ClientUser({
     required this.id,
@@ -16,6 +18,8 @@ class ClientUser {
     required this.phone,
     required this.companyName,
     this.avatarUrl,
+    this.defaultLocationId,
+    this.defaultPaymentMethodId,
   });
 
   factory ClientUser.fromJson(Map<String, dynamic> json) => ClientUser(
@@ -25,7 +29,16 @@ class ClientUser {
         phone: asString(json['phone']),
         companyName: asString(json['company_name']),
         avatarUrl: json['avatar_url'] as String?,
+        defaultLocationId: _positiveId(asMap(json['default_location'])['id']),
+        defaultPaymentMethodId:
+            _positiveId(asMap(json['default_payment_method'])['id']),
       );
+}
+
+int? _positiveId(Object? value) {
+  final id = asIntOrNull(value);
+  if (id == null || id <= 0) return null;
+  return id;
 }
 
 class AuthResult {

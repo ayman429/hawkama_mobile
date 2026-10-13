@@ -46,6 +46,9 @@ class ReportsCubit extends Cubit<ReportsState> {
       emit(const ReportsState(status: ListStatus.guest));
       return;
     }
+    if (state.items.isEmpty) {
+      emit(const ReportsState(status: ListStatus.loading));
+    }
     final result = await _repository.reports();
     if (isClosed || gen != _gen) return;
     emit(ReportsState(

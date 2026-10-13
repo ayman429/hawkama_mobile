@@ -513,25 +513,156 @@ class WizardSteps extends StatelessWidget {
 
 // ═══════════════════════ States (mobile.md §6) ═══════════════════════
 
-/// Skeleton rows mirroring `.mini`/`.bk`.
-class SkeletonRows extends StatelessWidget {
-  final int count;
-  const SkeletonRows({super.key, this.count = 4});
+/// Soft pulse shared by loading placeholders.
+class SkeletonPulse extends StatefulWidget {
+  final Widget child;
+  const SkeletonPulse({super.key, required this.child});
+
+  @override
+  State<SkeletonPulse> createState() => _SkeletonPulseState();
+}
+
+class _SkeletonPulseState extends State<SkeletonPulse>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) => _SkeletonTick(
+        t: Curves.easeInOut.transform(_controller.value),
+        child: child!,
+      ),
+      child: widget.child,
+    );
+  }
+}
+
+class _SkeletonTick extends InheritedWidget {
+  final double t;
+  const _SkeletonTick({required this.t, required super.child});
+
+  static double of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_SkeletonTick>()?.t ?? 1;
+  }
+
+  @override
+  bool updateShouldNotify(_SkeletonTick oldWidget) => t != oldWidget.t;
+}
+
+class SkeletonBox extends StatelessWidget {
+  final double height;
+  final double? width;
+  final double radius;
+  final EdgeInsetsGeometry? margin;
+  const SkeletonBox({
+    super.key,
+    this.height = 58,
+    this.width,
+    this.radius = 14,
+    this.margin,
+  });
 
   @override
   Widget build(BuildContext context) {
     final c = context.col;
-    return Column(
-      children: List.generate(
-        count,
-        (_) => Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          height: 58,
-          decoration: BoxDecoration(
-            color: c.chipBg,
-            borderRadius: BorderRadius.circular(14),
-          ),
+    final t = _SkeletonTick.of(context);
+    final bar = Color.lerp(c.line, c.stone.withValues(alpha: .35), t)!;
+    return Container(
+      width: width,
+      height: height,
+      margin: margin,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: c.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _bar(bar, 1),
+          if (height >= 52) ...[
+            const SizedBox(height: 8),
+            _bar(bar, .62),
+          ],
+          if (height >= 100) ...[
+            const SizedBox(height: 8),
+            _bar(bar, .4),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _bar(Color color, double factor) {
+    return FractionallySizedBox(
+      widthFactor: factor,
+      child: Container(
+        height: 8,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(4),
         ),
+      ),
+    );
+  }
+}
+
+/// Fills its parent with a pulsing bone. Used inside tight cells such as calendar days.
+class SkeletonFill extends StatelessWidget {
+  final double radius;
+  const SkeletonFill({super.key, this.radius = 9});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.col;
+    final t = _SkeletonTick.of(context);
+    final color = Color.lerp(c.line, c.stone.withValues(alpha: .45), t)!;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+}
+
+/// Skeleton rows mirroring list cards.
+class SkeletonRows extends StatelessWidget {
+  final int count;
+  final double height;
+  const SkeletonRows({super.key, this.count = 4, this.height = 58});
+
+  @override
+  Widget build(BuildContext context) {
+    return SkeletonPulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < count; i++)
+            SkeletonBox(
+              height: height,
+              margin: const EdgeInsets.only(bottom: 10),
+            ),
+        ],
       ),
     );
   }

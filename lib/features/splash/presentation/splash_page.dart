@@ -35,9 +35,11 @@ class SplashPage extends StatelessWidget {
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              child: SizedBox.expand(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                   Container(
                     width: 96,
                     height: 96,
@@ -71,7 +73,8 @@ class SplashPage extends StatelessWidget {
                     color: AppColors.goldLight,
                     strokeWidth: 2,
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

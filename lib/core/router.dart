@@ -44,21 +44,40 @@ import '../features/support/repo/support_repository.dart';
 import 'di.dart';
 import 'routes.dart';
 
+Page<void> _fadePage(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 420),
+    reverseTransitionDuration: const Duration(milliseconds: 280),
+    transitionsBuilder: (_, animation, __, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: child,
+    ),
+  );
+}
+
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
   routes: [
     GoRoute(
       path: AppRoutes.splash,
-      builder: (_, __) => BlocProvider(
-        create: (_) => SplashCubit(getIt<SharedPreferences>(), getIt<AuthCubit>()),
-        child: const SplashPage(),
+      pageBuilder: (_, state) => _fadePage(
+        state,
+        BlocProvider(
+          create: (_) => SplashCubit(getIt<SharedPreferences>(), getIt<AuthCubit>()),
+          child: const SplashPage(),
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.onboarding,
-      builder: (_, __) => BlocProvider(
-        create: (_) => OnboardingCubit(getIt<SharedPreferences>()),
-        child: const OnboardingPage(),
+      pageBuilder: (_, state) => _fadePage(
+        state,
+        BlocProvider(
+          create: (_) => OnboardingCubit(getIt<SharedPreferences>()),
+          child: const OnboardingPage(),
+        ),
       ),
     ),
     GoRoute(
@@ -67,7 +86,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.home,
-      builder: (_, __) => MultiBlocProvider(
+      pageBuilder: (_, state) => _fadePage(
+        state,
+        MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (_) => HomeCubit(
@@ -91,6 +112,7 @@ final appRouter = GoRouter(
           ),
         ],
         child: const MainShell(),
+        ),
       ),
     ),
     GoRoute(

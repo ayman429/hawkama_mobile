@@ -119,6 +119,7 @@ class BookingDraftCubit extends Cubit<BookingDraftState> {
   }
 
   Future<Result<BookingCreateResult>?> submit({
+    int? clientLocationId,
     int? paymentMethodId,
     String? cardToken,
     String? notes,
@@ -136,6 +137,7 @@ class BookingDraftCubit extends Cubit<BookingDraftState> {
       consultantId: consultant.id,
       date: date,
       time: slot.time,
+      clientLocationId: clientLocationId,
       paymentMethodId: paymentMethodId,
       cardToken: cardToken,
       notes: notes,

@@ -7,6 +7,7 @@ import '../../../core/routes.dart';
 import '../../../core/theme.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
+import '../../auth/cubit/auth_cubit.dart';
 import '../cubit/booking_draft_cubit.dart';
 
 class ConfirmPage extends StatelessWidget {
@@ -15,7 +16,14 @@ class ConfirmPage extends StatelessWidget {
   Future<void> _submit(BuildContext context) async {
     final ok = await ensureLoggedIn(context);
     if (!ok || !context.mounted) return;
-    final result = await context.read<BookingDraftCubit>().submit();
+    final auth = context.read<AuthCubit>();
+    await auth.refreshProfile();
+    if (!context.mounted) return;
+    final user = auth.state.user;
+    final result = await context.read<BookingDraftCubit>().submit(
+      clientLocationId: user?.defaultLocationId,
+      paymentMethodId: user?.defaultPaymentMethodId,
+    );
     if (!context.mounted || result == null) return;
     result.fold((created) {
       if (created.needs3ds) {

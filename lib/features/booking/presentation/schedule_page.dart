@@ -39,6 +39,7 @@ class SchedulePage extends StatelessWidget {
       _Calendar(
         month: schedule.month,
         enabled: schedule.dates.toSet(),
+        loading: schedule.loadingDates,
         selected: draft.date,
         onPick: (ymd) => _pickDay(context, ymd),
         onPrev: () {
@@ -107,6 +108,7 @@ class SchedulePage extends StatelessWidget {
 class _Calendar extends StatelessWidget {
   final DateTime month;
   final Set<String> enabled;
+  final bool loading;
   final String? selected;
   final ValueChanged<String> onPick;
   final VoidCallback onPrev;
@@ -116,6 +118,7 @@ class _Calendar extends StatelessWidget {
   const _Calendar({
     required this.month,
     required this.enabled,
+    required this.loading,
     required this.selected,
     required this.onPick,
     required this.onPrev,
@@ -173,17 +176,42 @@ class _Calendar extends StatelessWidget {
                   ),
                 ),
               ),
-            for (var i = 0; i < firstWeekday; i++) const SizedBox.shrink(),
-            for (var day = 1; day <= daysInMonth; day++)
-              _DayCell(
-                day: DateTime(month.year, month.month, day),
-                enabled: enabled,
-                selected: selected,
-                onPick: onPick,
-                c: c,
-              ),
           ],
         ),
+        if (loading)
+          SkeletonPulse(
+            child: GridView.count(
+              crossAxisCount: 7,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 3,
+              crossAxisSpacing: 3,
+              children: [
+                for (var i = 0; i < firstWeekday; i++) const SizedBox.shrink(),
+                for (var day = 1; day <= daysInMonth; day++)
+                  const SkeletonFill(),
+              ],
+            ),
+          )
+        else
+          GridView.count(
+            crossAxisCount: 7,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 3,
+            crossAxisSpacing: 3,
+            children: [
+              for (var i = 0; i < firstWeekday; i++) const SizedBox.shrink(),
+              for (var day = 1; day <= daysInMonth; day++)
+                _DayCell(
+                  day: DateTime(month.year, month.month, day),
+                  enabled: enabled,
+                  selected: selected,
+                  onPick: onPick,
+                  c: c,
+                ),
+            ],
+          ),
       ]),
     );
   }

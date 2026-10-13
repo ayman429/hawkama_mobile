@@ -69,8 +69,11 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> load() async {
     final gen = ++_gen;
+    final authed = _auth.state.isAuthed;
+    if (authed && state.dashboard == null && !state.loading) {
+      emit(state.copyWith(loading: true));
+    }
     try {
-      final authed = _auth.state.isAuthed;
       final dashboard = authed ? await _home.dashboard() : null;
       final services = await _packages.packages();
       final unread = authed ? await _notifications.unreadCount() : null;

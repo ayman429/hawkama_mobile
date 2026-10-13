@@ -39,12 +39,14 @@ class ScheduleState extends Equatable {
   final DateTime month;
   final List<String> dates;
   final List<Slot>? slots;
+  final bool loadingDates;
   final bool loadingSlots;
 
   const ScheduleState({
     required this.month,
     this.dates = const [],
     this.slots,
+    this.loadingDates = false,
     this.loadingSlots = false,
   });
 
@@ -52,6 +54,7 @@ class ScheduleState extends Equatable {
     DateTime? month,
     List<String>? dates,
     List<Slot>? slots,
+    bool? loadingDates,
     bool? loadingSlots,
     bool clearSlots = false,
   }) {
@@ -59,12 +62,13 @@ class ScheduleState extends Equatable {
       month: month ?? this.month,
       dates: dates ?? this.dates,
       slots: clearSlots ? null : slots ?? this.slots,
+      loadingDates: loadingDates ?? this.loadingDates,
       loadingSlots: loadingSlots ?? this.loadingSlots,
     );
   }
 
   @override
-  List<Object?> get props => [month, dates, slots, loadingSlots];
+  List<Object?> get props => [month, dates, slots, loadingDates, loadingSlots];
 }
 
 class ScheduleCubit extends Cubit<ScheduleState> {
@@ -76,19 +80,21 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   final BookingRepository _repository;
 
   Future<void> loadMonth(int consultantId) async {
+    emit(state.copyWith(loadingDates: true));
     final result = await _repository.availableDates(
       consultantId,
       '${state.month.year}-${state.month.month.toString().padLeft(2, '0')}',
     );
     if (isClosed) return;
     emit(state.copyWith(
+      loadingDates: false,
       dates: result.fold((data) => data, (_) => const []),
     ));
   }
 
   Future<void> changeMonth(int consultantId, int delta) async {
     final next = DateTime(state.month.year, state.month.month + delta);
-    emit(state.copyWith(month: next, dates: const []));
+    emit(state.copyWith(month: next, dates: const [], loadingDates: true));
     await loadMonth(consultantId);
   }
 

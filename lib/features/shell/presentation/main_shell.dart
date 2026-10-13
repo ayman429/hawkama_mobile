@@ -76,26 +76,39 @@ class _MainShellState extends State<MainShell> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _NavItem(Icons.home_outlined, tr('tabHome'), index == 0,
-                () => context.read<ShellCubit>().select(0)),
+                () => _openTab(context, 0)),
             _NavItem(Icons.calendar_month_outlined, tr('tabBookings'),
-                index == 1, () => _openAuthTab(context, 1)),
+                index == 1, () => _openTab(context, 1)),
             const SizedBox(width: 56),
             _NavItem(Icons.description_outlined, tr('tabReports'), index == 2,
-                () => _openAuthTab(context, 2)),
+                () => _openTab(context, 2)),
             _NavItem(Icons.person_outline, tr('tabProfile'), index == 3,
-                () => context.read<ShellCubit>().select(3)),
+                () => _openTab(context, 3)),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _openAuthTab(BuildContext context, int index) async {
-    if (!context.read<AuthCubit>().state.isAuthed) {
-      final ok = await ensureLoggedIn(context);
-      if (!ok || !context.mounted) return;
+  Future<void> _openTab(BuildContext context, int index) async {
+    if (index == 1 || index == 2) {
+      if (!context.read<AuthCubit>().state.isAuthed) {
+        final ok = await ensureLoggedIn(context);
+        if (!ok || !context.mounted) return;
+      }
     }
+    if (!context.mounted) return;
     context.read<ShellCubit>().select(index);
+    switch (index) {
+      case 0:
+        context.read<HomeCubit>().load();
+      case 1:
+        context.read<BookingsCubit>().load();
+      case 2:
+        context.read<ReportsCubit>().load();
+      case 3:
+        context.read<AuthCubit>().refreshProfile();
+    }
   }
 }
 

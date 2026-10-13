@@ -71,6 +71,8 @@ class ProfileRepository {
           phone: phone,
           companyName: company,
           avatarUrl: _mockUser!.avatarUrl,
+          defaultLocationId: _mockUser!.defaultLocationId,
+          defaultPaymentMethodId: _mockUser!.defaultPaymentMethodId,
         );
         return _mockUser!;
       }

@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../config.dart';
 import '../../l10n/strings.dart';
@@ -44,28 +47,17 @@ class ApiClient {
         ));
       },
     ));
-    if (kDebugMode) {
-      _dio.interceptors.add(InterceptorsWrapper(
-        onResponse: (response, handler) {
-          _logHttp(
-            response.requestOptions.method,
-            response.requestOptions.uri,
-            response.statusCode,
-            response.data,
-          );
-          handler.next(response);
-        },
-        onError: (error, handler) {
-          _logHttp(
-            error.requestOptions.method,
-            error.requestOptions.uri,
-            error.response?.statusCode,
-            error.response?.data ?? error.message,
-          );
-          handler.next(error);
-        },
-      ));
-    }
+    _dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      compact: true,
+      maxWidth: 90,
+      enabled: kDebugMode,
+      logPrint: (object) => log(object.toString(), name: 'API'),
+    ));
   }
 
   final SessionEvents _session;
@@ -119,16 +111,6 @@ class ApiClient {
       statusCode: error.response?.statusCode,
       fieldErrors: fieldErrors,
     );
-  }
-}
-
-void _logHttp(String method, Uri uri, int? status, Object? body) {
-  debugPrint('API $method $uri → ${status ?? '-'}');
-  final text = body?.toString() ?? '';
-  const size = 800;
-  for (var start = 0; start < text.length; start += size) {
-    final end = start + size > text.length ? text.length : start + size;
-    debugPrint(text.substring(start, end));
   }
 }
 

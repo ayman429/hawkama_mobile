@@ -50,6 +50,9 @@ class BookingsCubit extends Cubit<BookingsState> {
       emit(const BookingsState(status: ListStatus.guest));
       return;
     }
+    if (state.items.isEmpty) {
+      emit(const BookingsState(status: ListStatus.loading));
+    }
     final result = await _repository.bookings();
     if (isClosed || gen != _gen) return;
     emit(BookingsState(
