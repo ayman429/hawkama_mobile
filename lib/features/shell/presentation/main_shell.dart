@@ -111,14 +111,12 @@ class _MainShellState extends State<MainShell> {
     if (!context.mounted) return;
     context.read<ShellCubit>().select(index);
     switch (index) {
-      case 0:
-        context.read<HomeCubit>().load();
       case 1:
-        context.read<BookingsCubit>().load();
+        final bookings = context.read<BookingsCubit>();
+        if (bookings.awaitingFirstLoad) bookings.load();
       case 2:
-        context.read<ReportsCubit>().load();
-      case 3:
-        context.read<AuthCubit>().refreshProfile();
+        final reports = context.read<ReportsCubit>();
+        if (reports.awaitingFirstLoad) reports.load();
     }
   }
 }

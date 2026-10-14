@@ -39,13 +39,15 @@ class ReportsCubit extends Cubit<ReportsState> {
   late String _authKey;
   int _gen = 0;
 
+  bool get awaitingFirstLoad => state.status == ListStatus.loading;
+
   Future<void> load() async {
     final gen = ++_gen;
     if (!_auth.state.isAuthed) {
       emit(const ReportsState(status: ListStatus.guest));
       return;
     }
-    if (state.items.isEmpty) {
+    if (state.status != ListStatus.ready) {
       emit(const ReportsState(status: ListStatus.loading));
     }
     final result = await _repository.reports();

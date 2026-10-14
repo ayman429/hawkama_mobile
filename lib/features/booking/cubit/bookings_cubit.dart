@@ -43,13 +43,15 @@ class BookingsCubit extends Cubit<BookingsState> {
 
   String _keyOf(dynamic state) => '${state.isAuthed}-${state.user?.id}';
 
+  bool get awaitingFirstLoad => state.status == ListStatus.loading;
+
   Future<void> load() async {
     final gen = ++_gen;
     if (!_auth.state.isAuthed) {
       emit(const BookingsState(status: ListStatus.guest));
       return;
     }
-    if (state.items.isEmpty) {
+    if (state.status != ListStatus.ready) {
       emit(const BookingsState(status: ListStatus.loading));
     }
     final result = await _repository.bookings();
