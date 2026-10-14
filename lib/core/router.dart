@@ -32,8 +32,6 @@ import '../features/profile/presentation/payment_methods_page.dart';
 import '../features/profile/presentation/personal_data_page.dart';
 import '../features/profile/repo/profile_repository.dart';
 import '../features/reports/cubit/reports_cubit.dart';
-import '../features/reports/repo/reports_repository.dart';
-import '../features/home/repo/home_repository.dart';
 import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/cubit/splash_cubit.dart';
 import '../features/splash/presentation/onboarding_page.dart';
@@ -90,26 +88,9 @@ final appRouter = GoRouter(
         state,
         MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (_) => HomeCubit(
-              getIt<HomeRepository>(),
-              getIt<PackagesRepository>(),
-              getIt<NotificationsRepository>(),
-              getIt<AuthCubit>(),
-            ),
-          ),
-          BlocProvider(
-            create: (_) => BookingsCubit(
-              getIt<BookingRepository>(),
-              getIt<AuthCubit>(),
-            ),
-          ),
-          BlocProvider(
-            create: (_) => ReportsCubit(
-              getIt<ReportsRepository>(),
-              getIt<AuthCubit>(),
-            ),
-          ),
+          BlocProvider.value(value: getIt<HomeCubit>()),
+          BlocProvider.value(value: getIt<BookingsCubit>()),
+          BlocProvider.value(value: getIt<ReportsCubit>()),
         ],
         child: const MainShell(),
         ),

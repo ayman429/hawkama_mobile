@@ -33,7 +33,6 @@ class BookingsCubit extends Cubit<BookingsState> {
       _authKey = key;
       load();
     });
-    load();
   }
 
   final BookingRepository _repository;

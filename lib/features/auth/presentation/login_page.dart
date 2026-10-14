@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/routes.dart';
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/auth_cubit.dart';
@@ -85,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         showToast(context, state.errorMessage!, error: true);
       },
-      child: Scaffold(
+      child: AppScaffold(
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),

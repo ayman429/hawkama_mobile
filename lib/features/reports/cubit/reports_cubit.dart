@@ -31,7 +31,6 @@ class ReportsCubit extends Cubit<ReportsState> {
       _authKey = key;
       load();
     });
-    load();
   }
 
   final ReportsRepository _repository;

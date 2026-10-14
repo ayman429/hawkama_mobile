@@ -30,13 +30,15 @@ class _BookingsPageState extends State<BookingsPage> {
     final list = _tab == 0 ? upcoming : past;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
+        bottom: false,
         child: RefreshIndicator(
           color: AppColors.greenDeep,
           onRefresh: () => context.read<BookingsCubit>().load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 96),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 128),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

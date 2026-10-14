@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import 'app_backdrop.dart';
 import '../../l10n/strings.dart';
 
-/// White card: surface fill, 1px line, 12px radius (mobile.md §3 `.card`).
-BoxDecoration cardDeco(BuildContext context, {double radius = 12}) {
-  final c = context.col;
+/// Floating glass card: lit rim, translucent fill, soft lift. Shared by every content card.
+BoxDecoration cardDeco(
+  BuildContext context, {
+  double radius = 12,
+  Color? border,
+  Color? fill,
+  Gradient? gradient,
+}) {
+  final dark = context.isDark;
   return BoxDecoration(
-    color: c.surface,
+    color: gradient == null
+        ? (fill ?? (dark ? const Color(0xF012201C) : const Color(0xF7FFFFFF)))
+        : null,
+    gradient: gradient,
     borderRadius: BorderRadius.circular(radius),
-    border: Border.all(color: c.line),
+    border: Border.all(
+      color: border ?? Colors.white.withValues(alpha: dark ? .22 : .92),
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: const Color(0xFF14382E).withValues(alpha: dark ? .42 : .09),
+        blurRadius: 22,
+        offset: const Offset(0, 12),
+      ),
+    ],
   );
 }
 
@@ -513,6 +532,14 @@ class WizardSteps extends StatelessWidget {
 
 // ═══════════════════════ States (mobile.md §6) ═══════════════════════
 
+/// Inner loading bars use the same pale green as the app wash.
+Color _skeletonBone(BuildContext context, double t) {
+  final dark = context.isDark;
+  final from = dark ? const Color(0xFF1A3D32) : const Color(0xFFE7F4EE);
+  final to = dark ? const Color(0xFF2F6E58) : const Color(0xFFC5E3D6);
+  return Color.lerp(from, to, t)!;
+}
+
 /// Soft pulse shared by loading placeholders.
 class SkeletonPulse extends StatefulWidget {
   final Widget child;
@@ -583,7 +610,7 @@ class SkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.col;
     final t = _SkeletonTick.of(context);
-    final bar = Color.lerp(c.line, c.stone.withValues(alpha: .35), t)!;
+    final bar = _skeletonBone(context, t);
     return Container(
       width: width,
       height: height,
@@ -633,9 +660,8 @@ class SkeletonFill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.col;
     final t = _SkeletonTick.of(context);
-    final color = Color.lerp(c.line, c.stone.withValues(alpha: .45), t)!;
+    final color = _skeletonBone(context, t);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: color,
@@ -706,7 +732,7 @@ class ScreenBody extends StatelessWidget {
   const ScreenBody({super.key, required this.children, this.bottomPad = 32});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => AppScaffold(
         body: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(16, 14, 16, bottomPad),

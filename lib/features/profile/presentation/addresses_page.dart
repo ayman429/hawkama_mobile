@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/addresses_cubit.dart';
@@ -61,7 +62,7 @@ class AddressesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AddressesCubit>().state;
-    return Scaffold(
+    return AppScaffold(
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColors.greenDeep,

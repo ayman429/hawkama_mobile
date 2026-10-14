@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/network/failure.dart';
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/personal_data_cubit.dart';
@@ -100,7 +101,7 @@ class _PersonalDataPageState extends State<PersonalDataPage> {
     return BlocConsumer<PersonalDataCubit, PersonalDataState>(
       listener: (context, state) => _seed(state),
       builder: (context, state) {
-        return Scaffold(
+        return AppScaffold(
           body: SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),

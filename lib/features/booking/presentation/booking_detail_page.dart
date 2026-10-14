@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/booking_detail_cubit.dart';
@@ -15,7 +16,7 @@ class BookingDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<BookingDetailCubit>().state;
-    return Scaffold(
+    return AppScaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),

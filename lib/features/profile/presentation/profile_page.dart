@@ -22,9 +22,11 @@ class ProfilePage extends StatelessWidget {
       builder: (context, _) {
         final c = context.col;
         return Scaffold(
+          backgroundColor: Colors.transparent,
           body: SafeArea(
+            bottom: false,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 96),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 128),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

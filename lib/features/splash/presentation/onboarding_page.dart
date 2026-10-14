@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/routes.dart';
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/splash_cubit.dart';
@@ -29,7 +30,7 @@ class OnboardingPage extends StatelessWidget {
     final index = context.watch<OnboardingCubit>().state;
     final c = context.col;
     final last = index == 2;
-    return Scaffold(
+    return AppScaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),

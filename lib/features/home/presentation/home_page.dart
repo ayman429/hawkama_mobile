@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -28,84 +30,127 @@ class HomePage extends StatelessWidget {
     final next = dash?.nextBooking;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
+        bottom: false,
         child: RefreshIndicator(
           color: AppColors.greenDeep,
           onRefresh: () => context.read<HomeCubit>().load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 96),
+            padding: const EdgeInsets.only(bottom: 128),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(children: [
-                  PersonAvatar(avatarInitial(user?.name ?? tr('guest'))),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(greeting, style: TextStyle(fontSize: 11, color: c.stone)),
-                        Text(
-                          user?.name ?? tr('guest'),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: c.text,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      final ok = await ensureLoggedIn(context);
-                      if (!context.mounted || !ok) return;
-                      await context.push(AppRoutes.notifications);
-                      if (!context.mounted) return;
-                      context.read<HomeCubit>().load();
-                    },
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      decoration: cardDeco(context, radius: 12),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(Icons.notifications_outlined, size: 20, color: c.text),
-                          if (home.unread > 0)
-                            Positioned(
-                              top: 9,
-                              left: 9,
-                              child: Container(
-                                width: 7,
-                                height: 7,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.gold,
-                                  border: Border.all(color: c.surface, width: 1.5),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Column(
+                    children: [
+                      _GlassPanel(
+                        radius: 26,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          child: Row(children: [
+                            PersonAvatar(avatarInitial(user?.name ?? tr('guest')), size: 36, fontSize: 14),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    greeting,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF8E8E93),
+                                      height: 1.15,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
+                                  Text(
+                                    user?.name ?? tr('guest'),
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: -0.3,
+                                      color: c.text,
+                                      height: 1.15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                final ok = await ensureLoggedIn(context);
+                                if (!context.mounted || !ok) return;
+                                await context.push(AppRoutes.notifications);
+                                if (!context.mounted) return;
+                                context.read<HomeCubit>().load();
+                              },
+                              child: SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Icon(Icons.notifications_none_rounded, size: 24, color: c.text),
+                                    if (home.unread > 0)
+                                      PositionedDirectional(
+                                        top: 7,
+                                        end: 7,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: const Color(0xFFFF3B30),
+                                            border: Border.all(color: Colors.white, width: 1.5),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ),
-                        ],
+                          ]),
+                        ),
                       ),
-                    ),
-                  ),
-                ]),
-                const SizedBox(height: 14),
-                GestureDetector(
-                  onTap: () => _startBooking(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: cardDeco(context),
-                    child: Row(children: [
-                      Icon(Icons.search, size: 18, color: c.stone),
-                      const SizedBox(width: 8),
-                      Text(tr('searchHint'), style: TextStyle(fontSize: 11, color: c.stone)),
-                    ]),
+                      const SizedBox(height: 10),
+                      _GlassPanel(
+                        radius: 22,
+                        child: GestureDetector(
+                          onTap: () => _startBooking(context),
+                          behavior: HitTestBehavior.opaque,
+                          child: SizedBox(
+                            height: 44,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              child: Row(children: [
+                                const Icon(Icons.search_rounded, size: 20, color: Color(0xFF8E8E93)),
+                                const SizedBox(width: 8),
+                                Text(
+                                  tr('searchHint'),
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: -0.3,
+                                    color: Color(0xFF8E8E93),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                 if (home.loading)
                   const SkeletonPulse(
                     child: SkeletonBox(height: 132, radius: 16),
@@ -115,13 +160,10 @@ class HomePage extends StatelessWidget {
                 else
                   GestureDetector(
                     onTap: () => _startBooking(context),
-                    child: Container(
+                    child: _FloatGlass(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: const LinearGradient(
-                          colors: [AppColors.greenDeep, AppColors.greenMid],
-                        ),
+                      fill: const LinearGradient(
+                        colors: [AppColors.greenDeep, AppColors.greenMid],
                       ),
                       child: Text(
                         '${tr('heroEmpty')} — ${tr('heroEmptyCta')}',
@@ -148,30 +190,60 @@ class HomePage extends StatelessWidget {
                 const SizedBox(height: 14),
                 if (home.loading)
                   const SkeletonPulse(
-                    child: Row(children: [
-                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
-                      SizedBox(width: 8),
-                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
-                      SizedBox(width: 8),
-                      Expanded(child: SkeletonBox(height: 58, radius: 10)),
-                    ]),
+                    child: SizedBox(
+                      height: 148,
+                      child: Row(children: [
+                        Expanded(flex: 12, child: SkeletonBox(height: 148, radius: 24)),
+                        SizedBox(width: 10),
+                        Expanded(
+                          flex: 10,
+                          child: Column(children: [
+                            SkeletonBox(height: 69, radius: 22),
+                            SizedBox(height: 10),
+                            SkeletonBox(height: 69, radius: 22),
+                          ]),
+                        ),
+                      ]),
+                    ),
                   )
                 else
-                  Row(children: [
-                    Expanded(child: _Stat(locNum(dash?.reportsTotal ?? 0), tr('statReports'))),
-                    const SizedBox(width: 8),
-                    Expanded(child: _Stat(locNum(dash?.upcomingCount ?? 0), tr('statUpcoming'))),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _Stat(
-                        dash?.currentPackageName.isNotEmpty == true
-                            ? dash!.currentPackageName
-                            : tr('noPackage'),
-                        tr('statPackage'),
-                        small: true,
+                  SizedBox(
+                    height: 148,
+                    child: Row(children: [
+                      Expanded(
+                        flex: 12,
+                        child: _PlanSlip(
+                          name: dash?.currentPackageName.isNotEmpty == true
+                              ? dash!.currentPackageName
+                              : tr('noPackage'),
+                          muted: dash?.currentPackageName.isNotEmpty != true,
+                          onTap: () => context.push(AppRoutes.packages),
+                        ),
                       ),
-                    ),
-                  ]),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 10,
+                        child: Column(children: [
+                          Expanded(
+                            child: _CountTile(
+                              value: locNum(dash?.upcomingCount ?? 0),
+                              label: tr('statUpcoming'),
+                              onTap: () => _openAuthTab(context, 1),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Expanded(
+                            child: _CountTile(
+                              value: locNum(dash?.reportsTotal ?? 0),
+                              label: tr('statReports'),
+                              marked: (dash?.reportsUnread ?? 0) > 0,
+                              onTap: () => _openAuthTab(context, 2),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ]),
+                  ),
                 const SizedBox(height: 12),
                 SectionHeader(tr('ourServices'), action: tr('viewAll'), onAction: () => _startBooking(context)),
                 if (home.loading)
@@ -181,14 +253,11 @@ class HomePage extends StatelessWidget {
                     _MiniService(pkg: home.services[i]),
                 GestureDetector(
                   onTap: () => context.push(AppRoutes.packages),
-                  child: Container(
+                  child: _FloatGlass(
                     margin: const EdgeInsets.only(top: 6),
+                    radius: 14,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: c.bannerLine),
-                      gradient: LinearGradient(colors: [c.bannerFrom, c.goldSoft]),
-                    ),
+                    fill: LinearGradient(colors: [c.bannerFrom, c.goldSoft]),
                     child: Row(children: [
                       Expanded(
                         child: Column(
@@ -218,6 +287,9 @@ class HomePage extends StatelessWidget {
                     ]),
                   ),
                 ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -238,21 +310,74 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// Translucent card with a lit rim and a soft lift, so it reads as glass on water.
+/// The scrolling shader is intentionally not used here; it tears when the list moves.
+class _FloatGlass extends StatelessWidget {
+  final Widget child;
+  final double radius;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? margin;
+  final Gradient? fill;
+
+  const _FloatGlass({
+    required this.child,
+    this.radius = 16,
+    this.padding = EdgeInsets.zero,
+    this.margin,
+    this.fill,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: margin,
+      padding: padding,
+      clipBehavior: Clip.antiAlias,
+      decoration: cardDeco(context, radius: radius, gradient: fill),
+      child: child,
+    );
+  }
+}
+
+class _GlassPanel extends StatelessWidget {
+  final Widget child;
+  final double radius;
+  const _GlassPanel({required this.child, required this.radius});
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = context.isDark;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: dark ? const Color(0xC4142420) : const Color(0xC4FFFFFF),
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: dark ? .16 : .72),
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 class _HeroCard extends StatelessWidget {
   final Booking booking;
   const _HeroCard(this.booking);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return _FloatGlass(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.greenDeep, AppColors.greenMid],
-        ),
+      fill: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [AppColors.greenDeep, AppColors.greenMid],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,9 +458,8 @@ class _QuickAction extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: GestureDetector(
           onTap: onTap,
-          child: Container(
+          child: _FloatGlass(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            decoration: cardDeco(context),
             child: Column(children: [
               Container(
                 width: 32,
@@ -360,31 +484,161 @@ class _QuickAction extends StatelessWidget {
   }
 }
 
-class _Stat extends StatelessWidget {
-  final String value;
-  final String label;
-  final bool small;
-  const _Stat(this.value, this.label, {this.small = false});
+class _PlanSlip extends StatelessWidget {
+  final String name;
+  final bool muted;
+  final VoidCallback onTap;
+  const _PlanSlip({required this.name, required this.muted, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final c = context.col;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-      decoration: cardDeco(context, radius: 10),
-      child: Column(children: [
-        Text(
-          value,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: small ? 11 : 15,
-            fontWeight: FontWeight.w800,
-            color: c.text,
-          ),
+    final dark = context.isDark;
+    final forward = Directionality.of(context) == TextDirection.rtl
+        ? Icons.arrow_back_rounded
+        : Icons.arrow_forward_rounded;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: _FloatGlass(
+            radius: 24,
+            fill: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: dark
+                  ? const [Color(0xFF17362C), Color(0xFF10261F)]
+                  : const [Color(0xFFF4FBF8), Color(0xFFFFFFFF)],
+            ),
+            child: Stack(fit: StackFit.expand, children: [
+              PositionedDirectional(
+                top: -36,
+                end: -30,
+                child: Container(
+                  width: 104,
+                  height: 104,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: (dark ? Colors.white : AppColors.greenMid)
+                          .withValues(alpha: dark ? .08 : .12),
+                      width: 16,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tr('statPackage'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: c.stone,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 18,
+                        height: 1.25,
+                        fontWeight: FontWeight.w600,
+                        color: muted ? c.stone : c.text,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 28,
+                      height: 28,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: dark ? const Color(0xFF1A3D32) : const Color(0xFFE7F4EE),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        forward,
+                        size: 16,
+                        color: dark ? const Color(0xFF9ED9C2) : AppColors.greenMid,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ]),
         ),
-        const SizedBox(height: 3),
-        Text(label, style: TextStyle(fontSize: 8.5, color: c.stone)),
-      ]),
+      ),
+    );
+  }
+}
+
+class _CountTile extends StatelessWidget {
+  final String value;
+  final String label;
+  final VoidCallback onTap;
+  final bool marked;
+  const _CountTile({
+    required this.value,
+    required this.label,
+    required this.onTap,
+    this.marked = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.col;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: _FloatGlass(
+          radius: 22,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 26,
+                height: 1,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.6,
+                color: c.text,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.25,
+                  fontWeight: FontWeight.w500,
+                  color: c.stone,
+                ),
+              ),
+            ),
+            if (marked)
+              Container(
+                width: 7,
+                height: 7,
+                margin: const EdgeInsetsDirectional.only(start: 6),
+                decoration: const BoxDecoration(
+                  color: AppColors.greenMid,
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ]),
+        ),
+      ),
     );
   }
 }
@@ -403,10 +657,9 @@ class _MiniService extends StatelessWidget {
         draft.pickPackage(pkg);
         context.push(AppRoutes.bookingConsultant);
       },
-      child: Container(
+      child: _FloatGlass(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: cardDeco(context),
         child: Row(children: [
           const IconBox(Icons.work_outline),
           const SizedBox(width: 10),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/payment_methods_cubit.dart';
@@ -63,7 +64,7 @@ class PaymentMethodsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<PaymentMethodsCubit>().state;
-    return Scaffold(
+    return AppScaffold(
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColors.greenDeep,

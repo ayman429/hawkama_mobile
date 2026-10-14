@@ -61,10 +61,11 @@ class _PackagePick extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: selected ? c.pickOn : c.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: selected ? AppColors.gold : c.line, width: 1.5),
+        decoration: cardDeco(
+          context,
+          radius: 14,
+          fill: selected ? c.pickOn : null,
+          border: selected ? AppColors.gold : null,
         ),
         child: Row(children: [
           const IconBox(Icons.work_outline),

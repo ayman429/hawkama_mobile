@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/di.dart';
 import '../../auth/cubit/auth_cubit.dart';
+import '../../home/cubit/home_cubit.dart';
 
 enum SplashDestination { pending, onboarding, home }
 
@@ -14,6 +16,9 @@ class SplashCubit extends Cubit<SplashDestination> {
   final AuthCubit _auth;
 
   Future<void> _decide() async {
+    // Home data starts while the splash is on screen, so the first frame
+    // of home is already filled instead of waiting on skeletons.
+    getIt<HomeCubit>();
     await Future.delayed(const Duration(milliseconds: 4200));
     if (isClosed) return;
     final auth = _auth.state;

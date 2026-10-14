@@ -15,13 +15,15 @@ class ReportsPage extends StatelessWidget {
     final state = context.watch<ReportsCubit>().state;
     final c = context.col;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
+        bottom: false,
         child: RefreshIndicator(
           color: AppColors.greenDeep,
           onRefresh: () => context.read<ReportsCubit>().load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 96),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 128),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

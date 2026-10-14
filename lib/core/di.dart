@@ -5,11 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../features/auth/cubit/auth_cubit.dart';
 import '../features/auth/repo/auth_repository.dart';
 import '../features/booking/cubit/booking_draft_cubit.dart';
+import '../features/booking/cubit/bookings_cubit.dart';
 import '../features/booking/repo/booking_repository.dart';
+import '../features/home/cubit/home_cubit.dart';
 import '../features/home/repo/home_repository.dart';
 import '../features/notifications/repo/notifications_repository.dart';
 import '../features/packages/repo/packages_repository.dart';
 import '../features/profile/repo/profile_repository.dart';
+import '../features/reports/cubit/reports_cubit.dart';
 import '../features/reports/repo/reports_repository.dart';
 import '../features/shell/cubit/shell_cubit.dart';
 import '../features/support/repo/support_repository.dart';
@@ -48,6 +51,20 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton<AuthCubit>(() => AuthCubit(getIt(), getIt()));
   getIt.registerLazySingleton<BookingDraftCubit>(() => BookingDraftCubit(getIt()));
   getIt.registerLazySingleton<ShellCubit>(ShellCubit.new);
+  getIt.registerLazySingleton<HomeCubit>(
+    () => HomeCubit(
+      getIt<HomeRepository>(),
+      getIt<PackagesRepository>(),
+      getIt<NotificationsRepository>(),
+      getIt<AuthCubit>(),
+    ),
+  );
+  getIt.registerLazySingleton<BookingsCubit>(
+    () => BookingsCubit(getIt<BookingRepository>(), getIt<AuthCubit>()),
+  );
+  getIt.registerLazySingleton<ReportsCubit>(
+    () => ReportsCubit(getIt<ReportsRepository>(), getIt<AuthCubit>()),
+  );
 
   getIt<SessionEvents>().onUnauthorized = getIt<AuthCubit>().signOut;
   await getIt<AuthCubit>().restore();

@@ -74,9 +74,12 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(loading: true));
     }
     try {
-      final dashboard = authed ? await _home.dashboard() : null;
-      final services = await _packages.packages();
-      final unread = authed ? await _notifications.unreadCount() : null;
+      final dashboardFuture = authed ? _home.dashboard() : null;
+      final servicesFuture = _packages.packages();
+      final unreadFuture = authed ? _notifications.unreadCount() : null;
+      final dashboard = await dashboardFuture;
+      final services = await servicesFuture;
+      final unread = await unreadFuture;
       if (isClosed || gen != _gen) return;
       emit(HomeState(
         loading: false,

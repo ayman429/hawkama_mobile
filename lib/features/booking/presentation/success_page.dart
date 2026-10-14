@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/routes.dart';
 import '../../../core/theme.dart';
+import '../../../core/widgets/app_backdrop.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../../shell/cubit/shell_cubit.dart';
@@ -31,7 +32,7 @@ class SuccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.col;
-    return Scaffold(
+    return AppScaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 48, 16, 32),

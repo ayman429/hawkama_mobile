@@ -63,11 +63,7 @@ class _NotifRow extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        decoration: BoxDecoration(
-          color: c.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: c.line),
-        ),
+        decoration: cardDeco(context),
         child: IntrinsicHeight(
           child: Row(children: [
             if (item.unread) Container(width: 3, color: AppColors.gold),

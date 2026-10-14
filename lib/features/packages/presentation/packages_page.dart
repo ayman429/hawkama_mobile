@@ -69,10 +69,9 @@ class _PackageCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: current ? AppColors.gold : c.line),
+      decoration: cardDeco(
+        context,
+        border: current ? AppColors.gold : null,
         gradient: current
             ? LinearGradient(
                 begin: Alignment.topCenter,
