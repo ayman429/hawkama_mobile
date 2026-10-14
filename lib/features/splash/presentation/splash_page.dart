@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/routes.dart';
 import '../../../core/theme.dart';
-import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/strings.dart';
 import '../cubit/splash_cubit.dart';
+
+/// Cool off-white with a mint wash — light, contemporary, not heritage gold.
+const _splashBg = Color(0xFFF4F8F6);
+const _splashMint = Color(0xFFD7EBE3);
+const _splashMintSoft = Color(0xFFE8F4EF);
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -22,63 +27,112 @@ class SplashPage extends StatelessWidget {
               : AppRoutes.onboarding,
         );
       },
-      child: Scaffold(
-        backgroundColor: AppColors.greenDarker,
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.greenDeep, AppColors.greenDarker],
-            ),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox.expand(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: _splashBg,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+        child: const Scaffold(
+          backgroundColor: _splashBg,
+          body: _SplashBody(),
+        ),
+      ),
+    );
+  }
+}
+
+class _SplashBody extends StatelessWidget {
+  const _SplashBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Positioned(
+          top: -90,
+          right: -50,
+          child: _Glow(size: 240, color: _splashMint),
+        ),
+        const Positioned(
+          bottom: -110,
+          left: -70,
+          child: _Glow(size: 280, color: _splashMintSoft),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Container(
                     width: 96,
                     height: 96,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .1),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(
-                        color: AppColors.goldLight.withValues(alpha: .35),
-                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.greenDeep.withValues(alpha: .08),
+                          blurRadius: 28,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
                     ),
-                    child: const Center(child: LogoMark(size: 58, iconSize: 32)),
+                    child: const Icon(
+                      Icons.verified_user_rounded,
+                      size: 40,
+                      color: AppColors.greenMid,
+                    ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 22),
                   Text(
                     tr('brand'),
                     textAlign: TextAlign.center,
-                    style: amiri(size: 20, color: Colors.white),
+                    style: amiri(size: 22, color: AppColors.greenDeep),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Text(
                     tr('splashTagline'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 10.5,
-                      color: AppColors.goldLight,
-                      height: 1.9,
+                      fontSize: 13,
+                      color: Color(0xFF5E726A),
+                      height: 1.7,
                     ),
                   ),
-                  const SizedBox(height: 26),
-                  const CircularProgressIndicator(
-                    color: AppColors.goldLight,
-                    strokeWidth: 2,
+                  const SizedBox(height: 32),
+                  const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      color: AppColors.greenMid,
+                      strokeWidth: 2,
+                    ),
                   ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _Glow extends StatelessWidget {
+  final double size;
+  final Color color;
+  const _Glow({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
       ),
     );
   }

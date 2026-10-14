@@ -14,7 +14,7 @@ class SplashCubit extends Cubit<SplashDestination> {
   final AuthCubit _auth;
 
   Future<void> _decide() async {
-    await Future.delayed(const Duration(milliseconds: 2200));
+    await Future.delayed(const Duration(milliseconds: 4200));
     if (isClosed) return;
     final auth = _auth.state;
     if (auth.isAuthed && auth.user != null) {
