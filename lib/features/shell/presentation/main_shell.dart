@@ -230,7 +230,7 @@ class _GlassNavBarState extends State<_GlassNavBar>
                       saturation: 1.45,
                       lightAngle: -math.pi / 2,
                       glassColor: dark
-                          ? const Color(0x33101412)
+                          ? const Color(0x8C1E2422)
                           : const Color(0x2EFFFFFF),
                     ),
                     shape: const LiquidRoundedSuperellipse(borderRadius: 31),
@@ -254,16 +254,16 @@ class _GlassNavBarState extends State<_GlassNavBar>
                       height: lensHeight,
                       child: LiquidGlass.withOwnLayer(
                         settings: LiquidGlassSettings(
-                          thickness: 34,
-                          blur: 0.4,
-                          refractiveIndex: 1.42,
-                          lightIntensity: 2,
-                          ambientStrength: 0.12,
-                          chromaticAberration: 0.1,
-                          saturation: 1.85,
+                          thickness: dark ? 14 : 20,
+                          blur: dark ? 3 : 1.5,
+                          refractiveIndex: dark ? 1.12 : 1.22,
+                          lightIntensity: dark ? 0.55 : 1.1,
+                          ambientStrength: dark ? 0.3 : 0.2,
+                          chromaticAberration: 0,
+                          saturation: dark ? 1 : 1.4,
                           lightAngle: -math.pi / 2.4,
                           glassColor: dark
-                              ? const Color(0x33FFFFFF)
+                              ? const Color(0x38FFFFFF)
                               : const Color(0x66FFFFFF),
                         ),
                         shape: LiquidRoundedSuperellipse(
@@ -325,7 +325,9 @@ class _BookButton extends StatelessWidget {
         color: AppColors.gold,
         elevation: 0,
         shape: CircleBorder(
-          side: BorderSide(color: Colors.white.withValues(alpha: .7)),
+          side: BorderSide(
+            color: Colors.white.withValues(alpha: context.isDark ? .22 : .7),
+          ),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -351,7 +353,7 @@ class _NavItem extends StatelessWidget {
     final dark = context.isDark;
     final color = spec.active
         ? (dark ? Colors.white : const Color(0xFF1C1C1E))
-        : (dark ? Colors.white.withValues(alpha: .46) : const Color(0xFF8E8E93));
+        : (dark ? Colors.white.withValues(alpha: .55) : const Color(0xFF8E8E93));
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: spec.onTap,

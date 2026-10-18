@@ -8,3 +8,5 @@ Future<void> main() async {
   await initDependencies();
   runApp(const HawkamaApp());
 }
+// client@gcmc.sa
+// Password@123

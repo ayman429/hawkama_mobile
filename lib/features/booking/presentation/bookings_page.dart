@@ -34,7 +34,7 @@ class _BookingsPageState extends State<BookingsPage> {
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
-          color: AppColors.greenDeep,
+          color: context.col.ink,
           onRefresh: () => context.read<BookingsCubit>().load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -104,9 +104,11 @@ class _Pill extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: active ? AppColors.greenDeep : c.surface,
+            color: active ? c.primaryFill : c.card,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: active ? AppColors.greenDeep : c.line),
+            border: Border.all(
+              color: active ? c.primaryFill : (context.isDark ? c.hairline : c.line),
+            ),
           ),
           alignment: Alignment.center,
           child: Text(

@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../config.dart';
 import '../../l10n/strings.dart';
 import 'api_exception.dart';
 import 'session_events.dart';
@@ -76,6 +75,32 @@ class ApiClient {
       _unwrap(() => _dio.patch(path, data: data));
 
   Future<dynamic> delete(String path) => _unwrap(() => _dio.delete(path));
+
+  /// Streams a binary response straight to [savePath] with the auth headers.
+  /// Error bodies are JSON, so they are decoded into [ApiException] as usual.
+  Future<void> download(
+    String path,
+    String savePath, {
+    void Function(int received, int total)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      await _dio.download(
+        path,
+        savePath,
+        onReceiveProgress: onProgress,
+        cancelToken: cancelToken,
+        deleteOnError: true,
+        options: Options(
+          headers: const {'Accept': '*/*'},
+          receiveTimeout: const Duration(minutes: 3),
+        ),
+      );
+    } on DioException catch (error) {
+      if (error.error is ApiException) throw error.error as ApiException;
+      throw _toApiException(error);
+    }
+  }
 
   Future<dynamic> _unwrap(Future<Response<dynamic>> Function() call) async {
     try {

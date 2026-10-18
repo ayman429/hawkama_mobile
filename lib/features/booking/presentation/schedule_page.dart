@@ -57,10 +57,10 @@ class SchedulePage extends StatelessWidget {
         draft.date == null
             ? '${tr('availableTimes')} — ${tr('pickDayFirst')}'
             : '${tr('availableTimes')} — ${locDate(draft.date!)}',
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: AppColors.greenMid,
+          color: c.accent,
         ),
       ),
       const SizedBox(height: 6),
@@ -308,10 +308,10 @@ class _SlotChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: selected ? AppColors.greenDeep : c.surface,
+          color: selected ? c.primaryFill : c.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? AppColors.greenDeep : c.line,
+            color: selected ? c.primaryFill : c.line,
             width: 1.5,
           ),
         ),

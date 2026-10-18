@@ -25,10 +25,10 @@ class NotificationsPage extends StatelessWidget {
               onPressed: () => context.read<NotificationsCubit>().markAllRead(),
               child: Text(
                 tr('markAllRead'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.greenMid,
+                  color: c.accent,
                 ),
               ),
             ),

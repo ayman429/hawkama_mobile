@@ -33,9 +33,14 @@ class ProfilePage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.greenDeep,
-                      borderRadius: BorderRadius.circular(16),
+                    decoration: cardDeco(
+                      context,
+                      radius: 16,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [c.heroFrom, c.heroTo],
+                      ),
                     ),
                     child: Row(children: [
                       PersonAvatar(

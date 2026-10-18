@@ -67,7 +67,7 @@ class PaymentMethodsPage extends StatelessWidget {
     return AppScaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          color: AppColors.greenDeep,
+          color: context.col.ink,
           onRefresh: () => context.read<PaymentMethodsCubit>().load(),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -153,10 +153,10 @@ class _CardTile extends StatelessWidget {
             if (item.isDefault)
               Text(
                 tr('defaultBadge'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.greenMid,
+                  color: c.accent,
                 ),
               )
             else if (item.isExpired)
@@ -180,10 +180,10 @@ class _CardTile extends StatelessWidget {
                 onTap: busy ? null : onDefault,
                 child: Text(
                   tr('setDefault'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.greenMid,
+                    color: c.accent,
                   ),
                 ),
               ),
@@ -257,7 +257,7 @@ class _CardDialogState extends State<_CardDialog> {
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: _isDefault,
-              activeColor: AppColors.greenDeep,
+              activeColor: context.col.primaryFill,
               title: Text(tr('makeDefault'), style: const TextStyle(fontSize: 11)),
               onChanged: (value) => setState(() => _isDefault = value ?? false),
             ),

@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
-          color: AppColors.greenDeep,
+          color: c.ink,
           onRefresh: () => context.read<HomeCubit>().load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -105,7 +105,10 @@ class HomePage extends StatelessWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: const Color(0xFFFF3B30),
-                                            border: Border.all(color: Colors.white, width: 1.5),
+                                            border: Border.all(
+                                              color: context.isDark ? c.surface : Colors.white,
+                                              width: 1.5,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -162,9 +165,7 @@ class HomePage extends StatelessWidget {
                     onTap: () => _startBooking(context),
                     child: _FloatGlass(
                       padding: const EdgeInsets.all(16),
-                      fill: const LinearGradient(
-                        colors: [AppColors.greenDeep, AppColors.greenMid],
-                      ),
+                      fill: LinearGradient(colors: [c.heroFrom, c.heroTo]),
                       child: Text(
                         '${tr('heroEmpty')} — ${tr('heroEmptyCta')}',
                         style: const TextStyle(
@@ -353,10 +354,10 @@ class _GlassPanel extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: dark ? const Color(0xC4142420) : const Color(0xC4FFFFFF),
+            color: dark ? const Color(0xCC1C2321) : const Color(0xC4FFFFFF),
             borderRadius: BorderRadius.circular(radius),
             border: Border.all(
-              color: Colors.white.withValues(alpha: dark ? .16 : .72),
+              color: Colors.white.withValues(alpha: dark ? .10 : .72),
             ),
           ),
           child: child,
@@ -372,12 +373,13 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.col;
     return _FloatGlass(
       padding: const EdgeInsets.all(16),
-      fill: const LinearGradient(
+      fill: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.greenDeep, AppColors.greenMid],
+        colors: [c.heroFrom, c.heroTo],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,10 +468,10 @@ class _QuickAction extends StatelessWidget {
                 height: 32,
                 margin: const EdgeInsets.only(bottom: 6),
                 decoration: BoxDecoration(
-                  color: c.goldSoft,
+                  color: context.isDark ? c.accentSoft : c.goldSoft,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, size: 15, color: AppColors.greenMid),
+                child: Icon(icon, size: 15, color: c.accent),
               ),
               Text(
                 label,
@@ -508,7 +510,7 @@ class _PlanSlip extends StatelessWidget {
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: dark
-                  ? const [Color(0xFF17362C), Color(0xFF10261F)]
+                  ? const [Color(0xFF1B2623), Color(0xFF151A19)]
                   : const [Color(0xFFF4FBF8), Color(0xFFFFFFFF)],
             ),
             child: Stack(fit: StackFit.expand, children: [
@@ -521,8 +523,7 @@ class _PlanSlip extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: (dark ? Colors.white : AppColors.greenMid)
-                          .withValues(alpha: dark ? .08 : .12),
+                      color: c.accent.withValues(alpha: dark ? .10 : .12),
                       width: 16,
                     ),
                   ),
@@ -559,14 +560,10 @@ class _PlanSlip extends StatelessWidget {
                       height: 28,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: dark ? const Color(0xFF1A3D32) : const Color(0xFFE7F4EE),
+                        color: c.accentSoft,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        forward,
-                        size: 16,
-                        color: dark ? const Color(0xFF9ED9C2) : AppColors.greenMid,
-                      ),
+                      child: Icon(forward, size: 16, color: c.accent),
                     ),
                   ],
                 ),
@@ -631,8 +628,8 @@ class _CountTile extends StatelessWidget {
                 width: 7,
                 height: 7,
                 margin: const EdgeInsetsDirectional.only(start: 6),
-                decoration: const BoxDecoration(
-                  color: AppColors.greenMid,
+                decoration: BoxDecoration(
+                  color: c.accent,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -687,10 +684,10 @@ class _MiniService extends StatelessWidget {
           ),
           Text(
             pkg.priceFormatted,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: AppColors.greenMid,
+              color: c.accent,
             ),
           ),
         ]),

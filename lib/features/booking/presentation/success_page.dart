@@ -45,10 +45,10 @@ class SuccessPage extends StatelessWidget {
                   height: 74,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.greenDeep,
+                    color: c.primaryFill,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.greenDeep.withValues(alpha: .08),
+                        color: c.accent.withValues(alpha: context.isDark ? .14 : .08),
                         blurRadius: 0,
                         spreadRadius: 8,
                       ),

@@ -134,7 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                                   duration: const Duration(milliseconds: 180),
                                   padding: const EdgeInsets.symmetric(vertical: 7),
                                   decoration: BoxDecoration(
-                                    color: on ? c.surface : Colors.transparent,
+                                    color: on
+                                        ? (context.isDark ? const Color(0xFF36413D) : c.surface)
+                                        : Colors.transparent,
                                     borderRadius: BorderRadius.circular(6),
                                     boxShadow: on
                                         ? [
@@ -179,10 +181,10 @@ class _LoginPageState extends State<LoginPage> {
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Text(
                             tr('forgotPassword'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.greenMid,
+                              color: context.col.accent,
                             ),
                           ),
                         ),

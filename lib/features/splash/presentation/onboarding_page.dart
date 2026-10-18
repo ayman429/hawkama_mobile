@@ -55,17 +55,19 @@ class OnboardingPage extends StatelessWidget {
                   height: 150,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: c.surface,
-                    border: Border.all(color: c.line),
+                    color: c.card,
+                    border: Border.all(color: context.isDark ? c.hairline : c.line),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.greenDeep.withValues(alpha: .06),
+                        color: context.isDark
+                            ? Colors.black.withValues(alpha: .4)
+                            : AppColors.greenDeep.withValues(alpha: .06),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  child: Icon(_icons[index], size: 56, color: AppColors.greenMid),
+                  child: Icon(_icons[index], size: 56, color: c.accent),
                 ),
               ),
               const SizedBox(height: 18),

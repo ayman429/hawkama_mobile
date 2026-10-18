@@ -15,6 +15,7 @@ class AppRoutes {
   static const personalData = '/profile/personal';
   static const addresses = '/profile/addresses';
   static const paymentMethods = '/profile/payment-methods';
+  static const reportViewer = '/reports/view';
 
   static String bookingDetailOf(int id) => '/bookings/$id';
 }

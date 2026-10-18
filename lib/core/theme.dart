@@ -59,6 +59,28 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color bannerLine;
   final Color mutedCal;
 
+  /// Content card fill (first elevation step above the page).
+  final Color card;
+
+  /// Card rim; in dark mode this hairline is what separates layers, not the shadow.
+  final Color hairline;
+
+  /// Foreground brand color for icons, links and active states.
+  final Color accent;
+
+  /// Brand ink for headings/indicators that are deep green on light.
+  final Color ink;
+
+  /// Tinted tile behind accent icons.
+  final Color accentSoft;
+
+  /// Filled primary button.
+  final Color primaryFill;
+
+  /// Branded hero surfaces (next booking, profile header).
+  final Color heroFrom;
+  final Color heroTo;
+
   const AppColors({
     required this.background,
     required this.surface,
@@ -78,6 +100,14 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.bannerFrom,
     required this.bannerLine,
     required this.mutedCal,
+    required this.card,
+    required this.hairline,
+    required this.accent,
+    required this.ink,
+    required this.accentSoft,
+    required this.primaryFill,
+    required this.heroFrom,
+    required this.heroTo,
   });
 
   static const light = AppColors(
@@ -99,28 +129,45 @@ class AppColors extends ThemeExtension<AppColors> {
     bannerFrom: Color(0xFFF0E3C2),
     bannerLine: Color(0xFFE7D29A),
     mutedCal: Color(0xFFBBB2A2),
+    card: Color(0xF7FFFFFF),
+    hairline: Color(0xEBFFFFFF),
+    accent: greenMid,
+    ink: greenDeep,
+    accentSoft: Color(0xFFE7F4EE),
+    primaryFill: greenDeep,
+    heroFrom: greenDeep,
+    heroTo: greenMid,
   );
 
-  /// Dark surfaces keep the same brand greens and gold; only chrome flips.
+  /// Graphite layers with a faint green cast; brand green becomes a light mint
+  /// accent so it reads on dark, and elevation comes from lighter surfaces.
   static const dark = AppColors(
-    background: Color(0xFF071C17),
-    surface: Color(0xFF102E26),
-    text: Color(0xFFF6F2EA),
-    stone: Color(0xFFB7B0A4),
-    line: Color(0xFF2A4A3E),
-    goldSoft: Color(0xFF3A3018),
-    goldLine: Color(0xFF6B5424),
-    goldText: goldLight,
-    danger: Color(0xFFE07A6A),
-    dangerBg: Color(0xFF3A221C),
-    dangerLine: Color(0xFF6B3A32),
-    doneBg: Color(0xFF16382C),
-    doneText: Color(0xFF7DCAA8),
-    chipBg: Color(0xFF1A3D32),
-    pickOn: Color(0xFF1C3328),
-    bannerFrom: Color(0xFF3D3420),
-    bannerLine: Color(0xFF6B5A32),
-    mutedCal: Color(0xFF6E675C),
+    background: Color(0xFF0B0F0E),
+    surface: Color(0xFF1E2422),
+    text: Color(0xFFF2F4F3),
+    stone: Color(0xFF9AA5A1),
+    line: Color(0xFF2C3532),
+    goldSoft: Color(0xFF2E2717),
+    goldLine: Color(0xFF5E4B22),
+    goldText: Color(0xFFE2C27A),
+    danger: Color(0xFFFF7A6B),
+    dangerBg: Color(0xFF341C19),
+    dangerLine: Color(0xFF5E2E28),
+    doneBg: Color(0xFF14302A),
+    doneText: Color(0xFF6FD3A8),
+    chipBg: Color(0xFF232B29),
+    pickOn: Color(0xFF1F2B27),
+    bannerFrom: Color(0xFF2C2618),
+    bannerLine: Color(0xFF5A4A28),
+    mutedCal: Color(0xFF5C6663),
+    card: Color(0xFF161B1A),
+    hairline: Color(0x17FFFFFF),
+    accent: Color(0xFF5CC59C),
+    ink: Color(0xFF5CC59C),
+    accentSoft: Color(0x245CC59C),
+    primaryFill: Color(0xFF1F7A5C),
+    heroFrom: Color(0xFF1C5E48),
+    heroTo: Color(0xFF103C2F),
   );
 
   @override
@@ -143,6 +190,14 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? bannerFrom,
     Color? bannerLine,
     Color? mutedCal,
+    Color? card,
+    Color? hairline,
+    Color? accent,
+    Color? ink,
+    Color? accentSoft,
+    Color? primaryFill,
+    Color? heroFrom,
+    Color? heroTo,
   }) {
     return AppColors(
       background: background ?? this.background,
@@ -163,6 +218,14 @@ class AppColors extends ThemeExtension<AppColors> {
       bannerFrom: bannerFrom ?? this.bannerFrom,
       bannerLine: bannerLine ?? this.bannerLine,
       mutedCal: mutedCal ?? this.mutedCal,
+      card: card ?? this.card,
+      hairline: hairline ?? this.hairline,
+      accent: accent ?? this.accent,
+      ink: ink ?? this.ink,
+      accentSoft: accentSoft ?? this.accentSoft,
+      primaryFill: primaryFill ?? this.primaryFill,
+      heroFrom: heroFrom ?? this.heroFrom,
+      heroTo: heroTo ?? this.heroTo,
     );
   }
 
@@ -189,6 +252,14 @@ class AppColors extends ThemeExtension<AppColors> {
       bannerFrom: mix(bannerFrom, other.bannerFrom),
       bannerLine: mix(bannerLine, other.bannerLine),
       mutedCal: mix(mutedCal, other.mutedCal),
+      card: mix(card, other.card),
+      hairline: mix(hairline, other.hairline),
+      accent: mix(accent, other.accent),
+      ink: mix(ink, other.ink),
+      accentSoft: mix(accentSoft, other.accentSoft),
+      primaryFill: mix(primaryFill, other.primaryFill),
+      heroFrom: mix(heroFrom, other.heroFrom),
+      heroTo: mix(heroTo, other.heroTo),
     );
   }
 }
@@ -222,8 +293,8 @@ ThemeData buildAppTheme(Brightness brightness) {
     dividerColor: colors.line,
     colorScheme: ColorScheme(
       brightness: brightness,
-      primary: AppColors.greenDeep,
-      onPrimary: Colors.white,
+      primary: colors.ink,
+      onPrimary: brightness == Brightness.dark ? colors.background : Colors.white,
       secondary: AppColors.gold,
       onSecondary: AppColors.greenDarker,
       error: colors.danger,

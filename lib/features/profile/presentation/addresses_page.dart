@@ -65,7 +65,7 @@ class AddressesPage extends StatelessWidget {
     return AppScaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          color: AppColors.greenDeep,
+          color: context.col.ink,
           onRefresh: () => context.read<AddressesCubit>().load(),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -152,10 +152,10 @@ class _LocationCard extends StatelessWidget {
             if (item.isDefault)
               Text(
                 tr('defaultBadge'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.greenMid,
+                  color: c.accent,
                 ),
               ),
           ]),
@@ -191,7 +191,7 @@ class _Link extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: danger ? context.col.danger : AppColors.greenMid,
+          color: danger ? context.col.danger : context.col.accent,
         ),
       ),
     );
@@ -271,7 +271,7 @@ class _AddressDialogState extends State<_AddressDialog> {
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: _isDefault,
-              activeColor: AppColors.greenDeep,
+              activeColor: context.col.primaryFill,
               title: Text(tr('makeDefault'), style: const TextStyle(fontSize: 11)),
               onChanged: (value) => setState(() => _isDefault = value ?? false),
             ),

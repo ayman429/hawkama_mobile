@@ -32,6 +32,7 @@ import '../features/profile/presentation/payment_methods_page.dart';
 import '../features/profile/presentation/personal_data_page.dart';
 import '../features/profile/repo/profile_repository.dart';
 import '../features/reports/cubit/reports_cubit.dart';
+import '../features/reports/presentation/report_viewer_page.dart';
 import '../features/shell/presentation/main_shell.dart';
 import '../features/splash/cubit/splash_cubit.dart';
 import '../features/splash/presentation/onboarding_page.dart';
@@ -192,6 +193,14 @@ final appRouter = GoRouter(
           serviceName: draft.package?.name ?? extra.package?.name ?? '—',
           consultantName: draft.consultant?.name ?? extra.consultant?.name ?? '—',
         );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.reportViewer,
+      builder: (_, state) {
+        final extra = state.extra;
+        if (extra is! ReportViewerArgs) return const Scaffold(body: SizedBox.shrink());
+        return ReportViewerPage(args: extra);
       },
     ),
   ],

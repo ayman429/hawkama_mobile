@@ -18,7 +18,7 @@ class AppBackdrop extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: dark
-                ? const [Color(0xFF071410), Color(0xFF0C221C), Color(0xFF081814)]
+                ? const [Color(0xFF0D1211), Color(0xFF0B0F0E), Color(0xFF090C0B)]
                 : const [Color(0xFFF8F7F4), Color(0xFFEEF5F1), Color(0xFFF7F8F6)],
           ),
         ),
@@ -44,8 +44,9 @@ class _Wash extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = context.isDark;
     final color = dark
-        ? (top ? const Color(0xFF1A4538) : const Color(0xFF123028))
+        ? (top ? const Color(0xFF1E5A46) : const Color(0xFF173B31))
         : (top ? const Color(0xFFD3E9DF) : const Color(0xFFE5F1EB));
+    final alpha = dark ? (top ? .38 : (low ? .18 : .22)) : (low ? .55 : .9);
     return ImageFiltered(
       imageFilter: ImageFilter.blur(sigmaX: 72, sigmaY: 72),
       child: Container(
@@ -53,7 +54,7 @@ class _Wash extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: color.withValues(alpha: low ? .55 : .9),
+          color: color.withValues(alpha: alpha),
         ),
       ),
     );
@@ -81,7 +82,7 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = context.isDark;
     return Scaffold(
-      backgroundColor: dark ? const Color(0xFF071410) : const Color(0xFFF8F7F4),
+      backgroundColor: dark ? const Color(0xFF0B0F0E) : const Color(0xFFF8F7F4),
       extendBody: extendBody,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,

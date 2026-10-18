@@ -13,19 +13,18 @@ BoxDecoration cardDeco(
   Gradient? gradient,
 }) {
   final dark = context.isDark;
+  final c = context.col;
   return BoxDecoration(
-    color: gradient == null
-        ? (fill ?? (dark ? const Color(0xF012201C) : const Color(0xF7FFFFFF)))
-        : null,
+    color: gradient == null ? (fill ?? c.card) : null,
     gradient: gradient,
     borderRadius: BorderRadius.circular(radius),
-    border: Border.all(
-      color: border ?? Colors.white.withValues(alpha: dark ? .22 : .92),
-    ),
+    border: Border.all(color: border ?? c.hairline),
     boxShadow: [
       BoxShadow(
-        color: const Color(0xFF14382E).withValues(alpha: dark ? .42 : .09),
-        blurRadius: 22,
+        color: dark
+            ? Colors.black.withValues(alpha: .45)
+            : const Color(0xFF14382E).withValues(alpha: .09),
+        blurRadius: dark ? 26 : 22,
         offset: const Offset(0, 12),
       ),
     ],
@@ -40,7 +39,7 @@ void showToast(BuildContext context, String message,
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
-      backgroundColor: error ? const Color(0xFFB3402F) : AppColors.greenDeep,
+      backgroundColor: error ? const Color(0xFFB3402F) : context.col.primaryFill,
       content: Row(children: [
         if (icon != null) ...[
           Icon(icon, size: 16, color: Colors.white),
@@ -71,7 +70,7 @@ class LogoMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * 0.28),
         border: Border.all(color: c.goldLine),
       ),
-      child: Icon(Icons.verified_user, size: iconSize, color: AppColors.greenDeep),
+      child: Icon(Icons.verified_user, size: iconSize, color: c.ink),
     );
   }
 }
@@ -125,9 +124,9 @@ class BackHeader extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: c.surface,
+              color: c.card,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: c.line),
+              border: Border.all(color: context.isDark ? c.hairline : c.line),
             ),
             child: Icon(rtl ? Icons.chevron_right : Icons.chevron_left,
                 size: 20, color: c.text),
@@ -167,10 +166,10 @@ class SectionHeader extends StatelessWidget {
           GestureDetector(
             onTap: onAction,
             child: Text(action!,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.greenMid)),
+                    color: c.accent)),
           ),
       ]),
     );
@@ -201,7 +200,7 @@ class AppButton extends StatelessWidget {
     late final Color bg, fg, border;
     switch (variant) {
       case AppButtonVariant.primary:
-        bg = AppColors.greenDeep;
+        bg = c.primaryFill;
         fg = Colors.white;
         border = bg;
         break;
@@ -338,14 +337,20 @@ class IconBox extends StatelessWidget {
       this.fg});
 
   @override
-  Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-            color: bg ?? AppColors.greenDeep,
-            borderRadius: BorderRadius.circular(radius)),
-        child: Icon(icon, size: iconSize, color: fg ?? AppColors.goldLight),
-      );
+  Widget build(BuildContext context) {
+    final dark = context.isDark;
+    final c = context.col;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+          color: bg ?? (dark ? c.accentSoft : AppColors.greenDeep),
+          borderRadius: BorderRadius.circular(radius)),
+      child: Icon(icon,
+          size: iconSize,
+          color: fg ?? (dark ? c.accent : AppColors.goldLight)),
+    );
+  }
 }
 
 /// `.avatar` — Ø40 deep-green circle with gold initial (or gold variant).
@@ -357,19 +362,27 @@ class PersonAvatar extends StatelessWidget {
       {super.key, this.size = 40, this.fontSize = 15, this.gold = false});
 
   @override
-  Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: gold ? AppColors.gold : AppColors.greenDeep),
-        alignment: Alignment.center,
-        child: Text(initial,
-            style: TextStyle(
-                color: gold ? AppColors.greenDarker : AppColors.goldLight,
-                fontWeight: FontWeight.w800,
-                fontSize: fontSize)),
-      );
+  Widget build(BuildContext context) {
+    final dark = context.isDark;
+    final c = context.col;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: gold
+              ? AppColors.gold
+              : (dark ? c.accentSoft : AppColors.greenDeep)),
+      alignment: Alignment.center,
+      child: Text(initial,
+          style: TextStyle(
+              color: gold
+                  ? AppColors.greenDarker
+                  : (dark ? c.accent : AppColors.goldLight),
+              fontWeight: FontWeight.w800,
+              fontSize: fontSize)),
+    );
+  }
 }
 
 /// `.radio` trailing dot on `.pick` rows.
@@ -427,10 +440,10 @@ class AppField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: AppColors.greenMid)),
+                color: context.isDark ? c.stone : AppColors.greenMid)),
         const SizedBox(height: 4),
         TextField(
           controller: controller,
@@ -456,7 +469,7 @@ class AppField extends StatelessWidget {
                 borderSide: BorderSide(color: c.line)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.greenMid)),
+                borderSide: BorderSide(color: c.accent)),
           ),
         ),
         if (errorText != null)
@@ -493,7 +506,7 @@ class WizardSteps extends StatelessWidget {
           child: Container(
             height: 1.5,
             margin: const EdgeInsets.only(top: 12, left: 4, right: 4),
-            color: on ? AppColors.greenDeep : c.line,
+            color: on ? c.ink : c.line,
           ),
         ));
       }
@@ -503,23 +516,25 @@ class WizardSteps extends StatelessWidget {
           height: 24,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: on ? AppColors.greenDeep : c.surface,
+            color: on ? c.primaryFill : c.surface,
             border: Border.all(
-                color: on ? AppColors.greenDeep : c.line, width: 1.5),
+                color: on ? c.primaryFill : c.line, width: 1.5),
           ),
           alignment: Alignment.center,
           child: Text(locNum(i + 1),
               style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: on ? AppColors.goldLight : c.stone)),
+                  color: on
+                      ? (context.isDark ? Colors.white : AppColors.goldLight)
+                      : c.stone)),
         ),
         const SizedBox(height: 4),
         Text(labels[i],
             style: TextStyle(
                 fontSize: 8,
                 fontWeight: on ? FontWeight.w700 : FontWeight.w400,
-                color: on ? AppColors.greenDeep : c.stone)),
+                color: on ? c.ink : c.stone)),
       ]));
     }
     return Padding(
@@ -535,8 +550,8 @@ class WizardSteps extends StatelessWidget {
 /// Inner loading bars use the same pale green as the app wash.
 Color _skeletonBone(BuildContext context, double t) {
   final dark = context.isDark;
-  final from = dark ? const Color(0xFF1A3D32) : const Color(0xFFE7F4EE);
-  final to = dark ? const Color(0xFF2F6E58) : const Color(0xFFC5E3D6);
+  final from = dark ? const Color(0xFF1F2725) : const Color(0xFFE7F4EE);
+  final to = dark ? const Color(0xFF2B3734) : const Color(0xFFC5E3D6);
   return Color.lerp(from, to, t)!;
 }
 
@@ -617,9 +632,9 @@ class SkeletonBox extends StatelessWidget {
       margin: margin,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: c.surface,
+        color: c.card,
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: c.line),
+        border: Border.all(color: context.isDark ? c.hairline : c.line),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
