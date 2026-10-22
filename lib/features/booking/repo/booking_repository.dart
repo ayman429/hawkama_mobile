@@ -113,7 +113,7 @@ class BookingRepository {
           paymentStatus: 'paid',
         );
       }
-      final data = asMap(await _api.post(Endpoints.bookings, {
+      final response = await _api.postPreservingStatus(Endpoints.bookings, {
         'package_id': packageId,
         'consultant_id': consultantId,
         'date': date,
@@ -122,7 +122,23 @@ class BookingRepository {
         if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
         if (cardToken != null) 'card_token': cardToken,
         if (notes != null && notes.isNotEmpty) 'client_notes': notes,
-      }));
+      });
+      final data = asMap(response.data);
+      if (response.statusCode == 503) {
+        final raw = asMap(response.rawBody);
+        final pendingData =
+            asMap(raw['data']).isNotEmpty ? asMap(raw['data']) : data;
+        final payment = asMap(pendingData['payment']);
+        return BookingCreateResult(
+          booking: pendingData['booking'] is Map
+              ? Booking.fromJson(asMap(pendingData['booking']))
+              : null,
+          paymentStatus: payment['status'] as String?,
+          transactionUrl: payment['transaction_url'] as String?,
+          paymentId: payment['id'] as int?,
+          pendingConfirmation: true,
+        );
+      }
       final payment = asMap(data['payment']);
       return BookingCreateResult(
         booking: Booking.fromJson(asMap(data['booking'])),
@@ -133,17 +149,34 @@ class BookingRepository {
     });
   }
 
+  Future<Result<PaymentVerification>> verifyPayment(int paymentId) {
+    return guard(() async {
+      final data =
+          asMap(await _api.post(Endpoints.verifyPayment(paymentId), {}));
+      final payment = asMap(data['payment']);
+      return PaymentVerification(
+        status: payment['status'] as String? ?? 'initiated',
+        booking: data['booking'] is Map
+            ? Booking.fromJson(asMap(data['booking']))
+            : null,
+        failureReason: payment['failure_reason'] as String?,
+      );
+    });
+  }
+
   Future<Result<Booking>> booking(int id) {
     return guard(() async {
       if (AppConfig.useMock) {
         await Future.delayed(const Duration(milliseconds: 150));
         final found = mockBookings.where((item) => item.id == id);
         if (found.isEmpty) {
-          throw ApiException(tr('loadFailed'), code: 'NOT_FOUND', statusCode: 404);
+          throw ApiException(tr('loadFailed'),
+              code: 'NOT_FOUND', statusCode: 404);
         }
         final item = found.first;
         return item.copyWith(
-          durationMinutes: item.durationMinutes == 0 ? 30 : item.durationMinutes,
+          durationMinutes:
+              item.durationMinutes == 0 ? 30 : item.durationMinutes,
           clientNotes: item.clientNotes.isEmpty && item.id == 5
               ? tr('mockBookingNote')
               : item.clientNotes,
@@ -152,7 +185,9 @@ class BookingRepository {
               : item.locationLabel,
           paymentLabel: item.paymentLabel.isNotEmpty
               ? item.paymentLabel
-              : (item.paymentStatus == 'paid' ? 'Visa •••• 4242' : item.paymentStatus),
+              : (item.paymentStatus == 'paid'
+                  ? 'Visa •••• 4242'
+                  : item.paymentStatus),
         );
       }
       return Booking.fromJson(asMap(await _api.get(Endpoints.booking(id))));

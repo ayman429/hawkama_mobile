@@ -155,59 +155,42 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                 if (home.loading)
-                  const SkeletonPulse(
-                    child: SkeletonBox(height: 132, radius: 16),
-                  )
-                else if (next != null)
-                  _HeroCard(next)
-                else
-                  GestureDetector(
-                    onTap: () => _startBooking(context),
-                    child: _FloatGlass(
-                      padding: const EdgeInsets.all(16),
-                      fill: LinearGradient(colors: [c.heroFrom, c.heroTo]),
-                      child: Text(
-                        '${tr('heroEmpty')} — ${tr('heroEmptyCta')}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                  const LogoLoadingWidget(size: 200)
+                // OLD: const SkeletonPulse(
+                //   child: SkeletonBox(height: 132, radius: 16),
+                // )
+                else ...[
+                  if (next != null)
+                    _HeroCard(next)
+                  else
+                    GestureDetector(
+                      onTap: () => _startBooking(context),
+                      child: _FloatGlass(
+                        padding: const EdgeInsets.all(16),
+                        fill: LinearGradient(colors: [c.heroFrom, c.heroTo]),
+                        child: Text(
+                          '${tr('heroEmpty')} — ${tr('heroEmptyCta')}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                const SizedBox(height: 14),
-                SectionHeader(tr('quickActions')),
-                Row(children: [
-                  _QuickAction(Icons.add, tr('newBooking'), () => _startBooking(context)),
-                  _QuickAction(Icons.calendar_month_outlined, tr('myBookings'),
-                      () => _openAuthTab(context, 1)),
-                  _QuickAction(Icons.description_outlined, tr('myReports'),
-                      () => _openAuthTab(context, 2)),
-                  _QuickAction(Icons.work_outline, tr('myPackages'), () {
-                    context.push(AppRoutes.packages);
-                  }),
-                ]),
-                const SizedBox(height: 14),
-                if (home.loading)
-                  const SkeletonPulse(
-                    child: SizedBox(
-                      height: 148,
-                      child: Row(children: [
-                        Expanded(flex: 12, child: SkeletonBox(height: 148, radius: 24)),
-                        SizedBox(width: 10),
-                        Expanded(
-                          flex: 10,
-                          child: Column(children: [
-                            SkeletonBox(height: 69, radius: 22),
-                            SizedBox(height: 10),
-                            SkeletonBox(height: 69, radius: 22),
-                          ]),
-                        ),
-                      ]),
-                    ),
-                  )
-                else
+                  const SizedBox(height: 14),
+                  SectionHeader(tr('quickActions')),
+                  Row(children: [
+                    _QuickAction(Icons.add, tr('newBooking'), () => _startBooking(context)),
+                    _QuickAction(Icons.calendar_month_outlined, tr('myBookings'),
+                        () => _openAuthTab(context, 1)),
+                    _QuickAction(Icons.description_outlined, tr('myReports'),
+                        () => _openAuthTab(context, 2)),
+                    _QuickAction(Icons.work_outline, tr('myPackages'), () {
+                      context.push(AppRoutes.packages);
+                    }),
+                  ]),
+                  const SizedBox(height: 14),
                   SizedBox(
                     height: 148,
                     child: Row(children: [
@@ -245,49 +228,47 @@ class HomePage extends StatelessWidget {
                       ),
                     ]),
                   ),
-                const SizedBox(height: 12),
-                SectionHeader(tr('ourServices'), action: tr('viewAll'), onAction: () => _startBooking(context)),
-                if (home.loading)
-                  const SkeletonRows(count: 2)
-                else
+                  const SizedBox(height: 12),
+                  SectionHeader(tr('ourServices'), action: tr('viewAll'), onAction: () => _startBooking(context)),
                   for (var i = 0; i < home.services.length && i < 2; i++)
                     _MiniService(pkg: home.services[i]),
-                GestureDetector(
-                  onTap: () => context.push(AppRoutes.packages),
-                  child: _FloatGlass(
-                    margin: const EdgeInsets.only(top: 6),
-                    radius: 14,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    fill: LinearGradient(colors: [c.bannerFrom, c.goldSoft]),
-                    child: Row(children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              tr('bannerTitle'),
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
-                                color: c.text,
+                  GestureDetector(
+                    onTap: () => context.push(AppRoutes.packages),
+                    child: _FloatGlass(
+                      margin: const EdgeInsets.only(top: 6),
+                      radius: 14,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      fill: LinearGradient(colors: [c.bannerFrom, c.goldSoft]),
+                      child: Row(children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tr('bannerTitle'),
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: c.text,
+                                ),
                               ),
-                            ),
-                            Text(
-                              tr('bannerSub'),
-                              style: TextStyle(fontSize: 9, color: c.goldText),
-                            ),
-                          ],
+                              Text(
+                                tr('bannerSub'),
+                                style: TextStyle(fontSize: 9, color: c.goldText),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(
-                        Directionality.of(context) == TextDirection.rtl
-                            ? Icons.chevron_left
-                            : Icons.chevron_right,
-                        color: c.text,
-                      ),
-                    ]),
+                        Icon(
+                          Directionality.of(context) == TextDirection.rtl
+                              ? Icons.chevron_left
+                              : Icons.chevron_right,
+                          color: c.text,
+                        ),
+                      ]),
+                    ),
                   ),
-                ),
+                ],
                     ],
                   ),
                 ),

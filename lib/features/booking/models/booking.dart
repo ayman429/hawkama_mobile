@@ -54,8 +54,7 @@ class Booking {
   bool get isUpcoming => status == 'pending' || status == 'pending_payment';
   bool get isCancelled => status == 'cancelled';
   bool get hasReport => reportStatus == 'uploaded';
-  String get dateTimeLabel =>
-      date.isEmpty ? '' : locDateTimeSlot(date, time);
+  String get dateTimeLabel => date.isEmpty ? '' : locDateTimeSlot(date, time);
 
   factory Booking.fromJson(Map<String, dynamic> json) {
     final consultant = asMap(json['consultant']);
@@ -135,18 +134,32 @@ String _paymentLabel(Object? value) {
 }
 
 class BookingCreateResult {
-  final Booking booking;
+  final Booking? booking;
   final String? paymentStatus;
   final String? transactionUrl;
   final int? paymentId;
+  final bool pendingConfirmation;
 
   const BookingCreateResult({
     required this.booking,
     this.paymentStatus,
     this.transactionUrl,
     this.paymentId,
+    this.pendingConfirmation = false,
   });
 
   bool get needs3ds =>
       paymentStatus == 'initiated' && (transactionUrl?.isNotEmpty ?? false);
+}
+
+class PaymentVerification {
+  final String status;
+  final Booking? booking;
+  final String? failureReason;
+
+  const PaymentVerification({
+    required this.status,
+    this.booking,
+    this.failureReason,
+  });
 }

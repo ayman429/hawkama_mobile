@@ -14,7 +14,12 @@ class AppConfig {
   /// Base URL of the API (…/api/v1). Local default matches the API guide §1.1.
   static const apiBaseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'https://www.gcmc.sa/api/v1',//'http://localhost:8000/api/v1',
+    defaultValue: 'https://www.gcmc.sa/api/v1',
+  );
+
+  static const paymentCallbackUrl = String.fromEnvironment(
+    'PAYMENT_CALLBACK_URL',
+    defaultValue: 'https://www.hawkama.sa/bookings/payment-callback',
   );
 
   /// WebSocket host (Laravel Reverb) — reserved for the real-time bell

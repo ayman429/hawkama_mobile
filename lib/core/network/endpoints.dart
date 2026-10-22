@@ -5,6 +5,7 @@ class Endpoints {
   static const logout = '/client/auth/logout';
   static const packages = '/public/packages';
   static const consultants = '/public/consultants';
+  static const meta = '/public/meta';
   static const quote = '/client/bookings/quote';
   static const bookings = '/client/bookings';
   static const dashboard = '/client/dashboard';
@@ -18,6 +19,9 @@ class Endpoints {
   static const profilePassword = '/client/profile/password';
   static const locations = '/client/locations';
   static const paymentMethods = '/client/payment-methods';
+
+  static String verifyPayment(int paymentId) =>
+      '/client/payments/$paymentId/verify';
 
   static String availableDates(int consultantId) =>
       '/public/consultants/$consultantId/available-dates';

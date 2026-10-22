@@ -43,24 +43,64 @@ String avatarInitial(String? name) {
 }
 
 const _arMonths = [
-  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+  'يناير',
+  'فبراير',
+  'مارس',
+  'أبريل',
+  'مايو',
+  'يونيو',
+  'يوليو',
+  'أغسطس',
+  'سبتمبر',
+  'أكتوبر',
+  'نوفمبر',
+  'ديسمبر',
 ];
 const _enMonths = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 /// DateTime.weekday 1 = Monday … 7 = Sunday.
 const _arWeekdays = [
-  'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد',
+  'الاثنين',
+  'الثلاثاء',
+  'الأربعاء',
+  'الخميس',
+  'الجمعة',
+  'السبت',
+  'الأحد',
 ];
 const _enWeekdays = [
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
 ];
 
 /// Calendar header, Sunday-first.
-const _arWeekHeader = ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+const _arWeekHeader = [
+  'أحد',
+  'اثنين',
+  'ثلاثاء',
+  'أربعاء',
+  'خميس',
+  'جمعة',
+  'سبت'
+];
 const _enWeekHeader = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 List<String> get locMonths => L10n.isAr ? _arMonths : _enMonths;
@@ -111,11 +151,13 @@ const _t = <String, Map<String, String>>{
     'skip': 'تخطّي',
     'obNext': 'التالي',
     'ob1t': 'احجز موعدك بسهولة',
-    'ob1p': 'اختر الخدمة والمستشار والوقت المناسب خلال أقل من دقيقة — بدون مكالمات أو انتظار.',
+    'ob1p':
+        'اختر الخدمة والمستشار والوقت المناسب خلال أقل من دقيقة — بدون مكالمات أو انتظار.',
     'ob2t': 'تذكيرات فورية',
     'ob2p': 'إشعارات تذكّرك بمواعيدك القادمة وتصلك التقارير فور جاهزيتها.',
     'ob3t': 'مستشارون معتمدون',
-    'ob3p': 'نخبة من خبراء الحوكمة والامتثال والاستشارات الإدارية لخدمة منشأتك.',
+    'ob3p':
+        'نخبة من خبراء الحوكمة والامتثال والاستشارات الإدارية لخدمة منشأتك.',
     // auth
     'loginSub': 'سجّل دخولك لإدارة استشاراتك وباقاتك',
     'tabLogin': 'تسجيل الدخول',
@@ -256,9 +298,27 @@ const _t = <String, Map<String, String>>{
     'backHome': 'العودة للرئيسية',
     // payment placeholders (Step 6 in the API guide lands here)
     'paymentTitle': 'الدفع',
-    'paymentWebNote': 'يُعرض نموذج Moyasar الآمن داخل التطبيق هنا (3-D Secure).',
+    'paymentWebNote':
+        'يُعرض نموذج Moyasar الآمن داخل التطبيق هنا (3-D Secure).',
     'payNow': 'ادفع الآن',
     'paymentFailed': 'فشل الدفع، جرّب بطاقة أخرى',
+    'cardNameNeedsTwoWords': 'أدخل الاسم الأول واسم العائلة كما على البطاقة',
+    'invalidCardNumber': 'تحقق من رقم البطاقة',
+    'invalidExpiry': 'تحقق من تاريخ انتهاء البطاقة',
+    'invalidCvc': 'تحقق من رمز الأمان',
+    'bookingLocation': 'موقع تقديم الخدمة',
+    'bookingLocationRequired': 'اختر موقعًا أو أضف عنوانًا لإتمام الحجز',
+    'paymentChooseCard': 'اختر بطاقة أو أدخل بطاقة جديدة',
+    'paymentPendingInfo': 'لا يزال الدفع قيد التأكيد. تحقق من مواعيدي.',
+    'paymentConfigMissing': 'تعذر إعداد الدفع. تواصل مع الدعم.',
+    'addNewCard': 'إضافة بطاقة جديدة',
+    'cardDetailsStayWithMoyasar':
+        'تُرسل بيانات البطاقة مباشرةً إلى Moyasar بشكل آمن',
+    'cardHolderName': 'اسم حامل البطاقة',
+    'cardNumber': 'رقم البطاقة',
+    'expiryMonth': 'الشهر',
+    'expiryYear': 'السنة',
+    'continue': 'متابعة',
     'save': 'حفظ',
     'savedOK': 'تم الحفظ',
     'deletedOK': 'تم الحذف',
@@ -286,7 +346,8 @@ const _t = <String, Map<String, String>>{
     'addCard': 'إضافة بطاقة',
     'cardToken': 'رمز البطاقة',
     'cardTokenHint': 'tok_fake_success',
-    'cardTokenNote': 'الصق رمز البطاقة الصادر من نموذج الدفع الآمن. لا تُرسل أرقام البطاقة إلى الخادم.',
+    'cardTokenNote':
+        'الصق رمز البطاقة الصادر من نموذج الدفع الآمن. لا تُرسل أرقام البطاقة إلى الخادم.',
     'expired': 'منتهية',
     'fillRequired': 'أكمل الحقول المطلوبة',
     'loadFailed': 'تعذّر تحميل البيانات',
@@ -366,17 +427,21 @@ const _t = <String, Map<String, String>>{
     'confirm': 'Confirm',
     'yesCancel': 'Yes, cancel it',
     'back': 'Back',
-    'splashTagline': 'Book your consultation, track reports,\nand manage your subscription in one place',
+    'splashTagline':
+        'Book your consultation, track reports,\nand manage your subscription in one place',
     'getStarted': 'Get started',
     'continueGuest': 'Continue as guest',
     'skip': 'Skip',
     'obNext': 'Next',
     'ob1t': 'Book in under a minute',
-    'ob1p': 'Pick the service, consultant and time that suits you — no calls, no waiting.',
+    'ob1p':
+        'Pick the service, consultant and time that suits you — no calls, no waiting.',
     'ob2t': 'Instant reminders',
-    'ob2p': 'Get notified about upcoming appointments and new reports the moment they are ready.',
+    'ob2p':
+        'Get notified about upcoming appointments and new reports the moment they are ready.',
     'ob3t': 'Certified consultants',
-    'ob3p': 'A hand-picked panel of governance, compliance and management experts.',
+    'ob3p':
+        'A hand-picked panel of governance, compliance and management experts.',
     'loginSub': 'Sign in to manage your consultations and packages',
     'tabLogin': 'Sign in',
     'tabRegister': 'Create account',
@@ -505,9 +570,27 @@ const _t = <String, Map<String, String>>{
     'viewBookings': 'View my bookings',
     'backHome': 'Back to home',
     'paymentTitle': 'Payment',
-    'paymentWebNote': 'The Moyasar secure form (3-D Secure) is shown here in-app.',
+    'paymentWebNote':
+        'The Moyasar secure form (3-D Secure) is shown here in-app.',
     'payNow': 'Pay now',
     'paymentFailed': 'Payment failed, try another card',
+    'cardNameNeedsTwoWords': 'Enter the first and last name shown on the card',
+    'invalidCardNumber': 'Check the card number',
+    'invalidExpiry': 'Check the card expiry date',
+    'invalidCvc': 'Check the security code',
+    'bookingLocation': 'Service location',
+    'bookingLocationRequired': 'Choose or add a location to complete booking',
+    'paymentChooseCard': 'Choose a card or enter a new one',
+    'paymentPendingInfo':
+        'Your payment is still being confirmed. Check My bookings.',
+    'paymentConfigMissing': 'Payment is not configured. Contact support.',
+    'addNewCard': 'Add a new card',
+    'cardDetailsStayWithMoyasar': 'Card details are sent securely to Moyasar',
+    'cardHolderName': 'Cardholder name',
+    'cardNumber': 'Card number',
+    'expiryMonth': 'Month',
+    'expiryYear': 'Year',
+    'continue': 'Continue',
     'save': 'Save',
     'savedOK': 'Saved',
     'deletedOK': 'Deleted',
@@ -535,7 +618,8 @@ const _t = <String, Map<String, String>>{
     'addCard': 'Add a card',
     'cardToken': 'Card token',
     'cardTokenHint': 'tok_fake_success',
-    'cardTokenNote': 'Paste the token from the secure payment form. Card numbers are not sent to the server.',
+    'cardTokenNote':
+        'Paste the token from the secure payment form. Card numbers are not sent to the server.',
     'expired': 'Expired',
     'fillRequired': 'Fill in the required fields',
     'loadFailed': 'Could not load the data',
@@ -593,7 +677,8 @@ const _t = <String, Map<String, String>>{
     'mockReport3Title': 'Q3 quarterly compliance report',
     'mockReport3Meta': 'Issued at the end of October',
     'mockNotif1Title': 'Your booking is confirmed',
-    'mockNotif1Body': 'Governance session with Dr. Sarah on Tuesday at 10:00 AM',
+    'mockNotif1Body':
+        'Governance session with Dr. Sarah on Tuesday at 10:00 AM',
     'mockNotif1Time': '5 minutes ago',
     'mockNotif2Title': 'A new report is available',
     'mockNotif2Body': 'The September performance report is ready',

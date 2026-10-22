@@ -17,6 +17,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   shared_preferences: ^2.3.0
   url_launcher: ^6.3.0
+  webview_flutter: ^4.10.0
   cached_network_image: ^3.4.1
   intl: ^0.20.2
   cupertino_icons: ^1.0.8
@@ -29,6 +30,7 @@ dependencies:
   share_plus: ^12.0.2
   open_filex: ^5.0.0
   pdfrx: ^2.2.24
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -38,4 +40,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/animation/logo_animation.json
+    - assets/animation/logo_animation.gif
     - assets/mock/sample_report.pdf

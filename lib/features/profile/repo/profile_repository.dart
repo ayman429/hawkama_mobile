@@ -225,12 +225,14 @@ class ProfileRepository {
         }
         _ensureMock();
         if (isDefault) _clearDefaultCard();
+        // Extract last 4 digits from token for display
+        final lastFour = token.length >= 4 ? token.substring(token.length - 4) : '4242';
         final card = SavedCard(
           id: _nextCardId++,
           brand: 'visa',
-          lastFour: '4242',
+          lastFour: lastFour,
           isDefault: isDefault || _mockCards.isEmpty,
-          display: 'Visa •••• 4242',
+          display: 'Visa •••• $lastFour',
         );
         _mockCards.add(card);
         return card;

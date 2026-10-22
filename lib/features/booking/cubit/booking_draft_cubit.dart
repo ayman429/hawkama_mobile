@@ -145,4 +145,7 @@ class BookingDraftCubit extends Cubit<BookingDraftState> {
     if (!isClosed) emit(state.copyWith(submitting: false));
     return result;
   }
+
+  Future<Result<PaymentVerification>> verifyPayment(int paymentId) =>
+      _repository.verifyPayment(paymentId);
 }

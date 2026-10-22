@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../theme.dart';
 import 'app_backdrop.dart';
@@ -547,6 +548,34 @@ class WizardSteps extends StatelessWidget {
 
 // ═══════════════════════ States (mobile.md §6) ═══════════════════════
 
+/// Logo animation loading widget - replaces SkeletonPulse for data loading states
+class LogoLoadingWidget extends StatelessWidget {
+  final double? size;
+  const LogoLoadingWidget({super.key, this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height/1.5,
+      child: Center(
+        child: Image.asset(
+          'assets/animation/logo_animation.gif',
+          width:  50,
+          height:  50,
+          fit: BoxFit.contain,
+        ),
+        // OLD: Lottie.asset(
+        //   'assets/animation/logo_animation.json',
+        //   width:  200,
+        //   height:  200,
+        //   fit: BoxFit.contain,
+        // ),
+      ),
+    );
+  }
+}
+
+
 /// Inner loading bars use the same pale green as the app wash.
 Color _skeletonBone(BuildContext context, double t) {
   final dark = context.isDark;
@@ -694,18 +723,19 @@ class SkeletonRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SkeletonPulse(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0; i < count; i++)
-            SkeletonBox(
-              height: height,
-              margin: const EdgeInsets.only(bottom: 10),
-            ),
-        ],
-      ),
-    );
+    return const LogoLoadingWidget(size: 120);
+    // OLD: return SkeletonPulse(
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.stretch,
+    //     children: [
+    //       for (var i = 0; i < count; i++)
+    //         SkeletonBox(
+    //           height: height,
+    //           margin: const EdgeInsets.only(bottom: 10),
+    //         ),
+    //     ],
+    //   ),
+    // );
   }
 }
 

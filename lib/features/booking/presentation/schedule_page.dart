@@ -179,20 +179,24 @@ class _Calendar extends StatelessWidget {
           ],
         ),
         if (loading)
-          SkeletonPulse(
-            child: GridView.count(
-              crossAxisCount: 7,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 3,
-              crossAxisSpacing: 3,
-              children: [
-                for (var i = 0; i < firstWeekday; i++) const SizedBox.shrink(),
-                for (var day = 1; day <= daysInMonth; day++)
-                  const SkeletonFill(),
-              ],
-            ),
+          const SizedBox(
+            height: 200,
+            child: LogoLoadingWidget(size: 100),
           )
+        // OLD: SkeletonPulse(
+        //   child: GridView.count(
+        //     crossAxisCount: 7,
+        //     shrinkWrap: true,
+        //     physics: const NeverScrollableScrollPhysics(),
+        //     mainAxisSpacing: 3,
+        //     crossAxisSpacing: 3,
+        //     children: [
+        //       for (var i = 0; i < firstWeekday; i++) const SizedBox.shrink(),
+        //       for (var day = 1; day <= daysInMonth; day++)
+        //         const SkeletonFill(),
+        //     ],
+        //   ),
+        // )
         else
           GridView.count(
             crossAxisCount: 7,
@@ -328,3 +332,7 @@ class _SlotChip extends StatelessWidget {
     );
   }
 }
+//       ),
+//     );
+//   }
+// }
